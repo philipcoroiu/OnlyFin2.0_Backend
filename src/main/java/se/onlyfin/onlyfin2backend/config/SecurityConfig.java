@@ -10,12 +10,15 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+
+import static org.springframework.boot.autoconfigure.security.servlet.PathRequest.toH2Console;
 
 /**
  * This class is used to configure the security settings in Spring Security.
@@ -36,16 +39,28 @@ public class SecurityConfig {
 
         http.csrf(AbstractHttpConfigurer::disable);
 
+        //WARNING: SHOULD BE DISABLED IN PRODUCTION!
+        //Required to enable H2 development console
+        http.headers(headersConfigurer -> headersConfigurer.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable));
+
         http.authorizeHttpRequests(auth -> auth
+                //WARNING: DISABLE IN PRODUCTION - allow H2 development console:
+                .requestMatchers(toH2Console()).permitAll()
+
+                //allow OPTION requests
+                .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+
+                //allow specified endpoints for unauthenticated users
                 .requestMatchers(
                         "/"
                 )
                 .permitAll()
+
+                //restrict specified endpoints to only authenticated users
                 .requestMatchers(
-                        "/user"
+                        "/user/**"
                 )
                 .hasRole("USER")
-                .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
         );
 
         http.formLogin(loginForm -> loginForm
