@@ -52,13 +52,14 @@ public class SecurityConfig {
 
                 //allow specified endpoints for unauthenticated users
                 .requestMatchers(
-                        "/"
+                        "/",
+                        "/users/register"
                 )
                 .permitAll()
 
                 //restrict specified endpoints to only authenticated users
                 .requestMatchers(
-                        "/user/**"
+                        "/something/very/private"
                 )
                 .hasRole("USER")
         );

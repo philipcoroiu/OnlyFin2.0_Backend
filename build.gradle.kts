@@ -24,13 +24,17 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-thymeleaf")
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.thymeleaf.extras:thymeleaf-extras-springsecurity6")
-    compileOnly("org.projectlombok:lombok")
-    //runtimeOnly("org.postgresql:postgresql")
-    runtimeOnly("com.h2database:h2")
+    implementation("org.springframework.boot:spring-boot-starter-validation")
+
     annotationProcessor("org.projectlombok:lombok")
+
+    runtimeOnly("com.h2database:h2")
+    //runtimeOnly("org.postgresql:postgresql")
+
+    compileOnly("org.projectlombok:lombok")
+
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.springframework.security:spring-security-test")
-
 }
 
 tasks.withType<Test> {
