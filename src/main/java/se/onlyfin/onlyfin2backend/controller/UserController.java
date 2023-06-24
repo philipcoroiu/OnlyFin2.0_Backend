@@ -58,7 +58,6 @@ public class UserController {
             User loggedInUser = userService.getUserOrException(principal.getName());
             analysts.remove(loggedInUser);
         }
-
         if (analysts.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NO_CONTENT).body("No users were found");
         }
