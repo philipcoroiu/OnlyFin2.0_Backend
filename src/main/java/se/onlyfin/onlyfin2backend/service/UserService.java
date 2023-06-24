@@ -9,6 +9,7 @@ import se.onlyfin.onlyfin2backend.DTO.UserDTO;
 import se.onlyfin.onlyfin2backend.model.User;
 import se.onlyfin.onlyfin2backend.repository.UserRepository;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -65,6 +66,10 @@ public class UserService {
      */
     public User getUserOrNull(Integer id) {
         return userRepository.findById(id).orElse(null);
+    }
+
+    public User getAnalystOrNull(@NonNull String analystUsername) {
+        return userRepository.findByisAnalystIsTrueAndUsernameEquals(analystUsername).orElse(null);
     }
 
     /**
@@ -169,6 +174,14 @@ public class UserService {
      */
     public User saveUser(User targetUser) {
         return userRepository.save(targetUser);
+    }
+
+    public List<User> getAllAnalysts() {
+        return userRepository.findAllByisAnalystIsTrue();
+    }
+
+    public List<User> findAnalystsByName(String searchQuery) {
+        return userRepository.findAllByisAnalystIsTrueAndUsernameContainsIgnoreCase(searchQuery);
     }
 
     /**

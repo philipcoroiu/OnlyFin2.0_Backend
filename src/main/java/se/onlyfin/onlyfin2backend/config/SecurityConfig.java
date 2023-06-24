@@ -12,6 +12,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.HttpStatusEntryPoint;
@@ -53,7 +54,10 @@ public class SecurityConfig {
                 //allow specified endpoints for unauthenticated users
                 .requestMatchers(
                         "/",
-                        "/users/register"
+                        "/users/register",
+                        "/users/search/all",
+                        "/users/search/username",
+                        "/users/username"
                 )
                 .permitAll()
 
@@ -80,7 +84,8 @@ public class SecurityConfig {
      */
     @Bean
     public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
+        return NoOpPasswordEncoder.getInstance();
+        //TODO: Use this later: return new BCryptPasswordEncoder();
     }
 
     /**
