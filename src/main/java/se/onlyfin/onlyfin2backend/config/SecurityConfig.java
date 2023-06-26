@@ -54,6 +54,7 @@ public class SecurityConfig {
                 //allow specified endpoints for unauthenticated users
                 .requestMatchers(
                         "/",
+                        "/plz",
                         "/users/register",
                         "/users/search/all",
                         "/users/search/username",
