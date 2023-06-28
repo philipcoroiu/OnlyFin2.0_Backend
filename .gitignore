@@ -340,3 +340,5 @@ gradle-app.setting
 # Java heap dump
 *.hprof
 *.bin
+.idea/dataSources.xml
+src/main/resources/database-config.properties
