@@ -36,12 +36,11 @@ public class UserController {
      */
     @PostMapping("/register")
     public ResponseEntity<String> registerNewUser(@RequestBody UserDTO userDTO) {
-        Optional<User> userOptional = userService.registerUser(userDTO);
-        if (userOptional.isEmpty()) {
+        User registeredUser = userService.registerUser(userDTO).orElse(null);
+        if (registeredUser == null) {
             return ResponseEntity.badRequest().body("Registration failed");
         }
 
-        User registeredUser = userOptional.get();
         return ResponseEntity.ok(registeredUser.getUsername());
     }
 
@@ -82,7 +81,7 @@ public class UserController {
     }
 
     /**
-     * @param username The search query
+     * @param username  The search query
      * @param principal The logged-in user
      * @return All analysts in the database except the logged-in user that match the search query.
      */

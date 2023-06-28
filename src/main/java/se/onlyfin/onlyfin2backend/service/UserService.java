@@ -98,12 +98,23 @@ public class UserService {
     }
 
     /**
-     * @param user The user details to be checked.
+     * Checks if a userDTO is registrable
+     *
+     * @param user The user details DTO to be checked.
      * @return True if the user is registrable else false.
      */
     public boolean registrable(UserDTO user) {
-        return !userRepository.existsByEmail(user.email()) &&
-                !userRepository.existsByUsernameIgnoreCase(user.username());
+        if (user == null) {
+            return false;
+        }
+        if (userRepository.existsByEmail(user.email())) {
+            return false;
+        }
+        if (userRepository.existsByUsernameIgnoreCase(user.username())) {
+            return false;
+        }
+
+        return true;
     }
 
     /**
