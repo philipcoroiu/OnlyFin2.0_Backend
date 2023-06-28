@@ -12,7 +12,6 @@ import se.onlyfin.onlyfin2backend.service.UserService;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * TODO: ADD MORE API CALLS FOR USER SERVICE FUNCTIONS
