@@ -28,8 +28,8 @@ dependencies {
 
     annotationProcessor("org.projectlombok:lombok")
 
-    runtimeOnly("com.h2database:h2")
-    //runtimeOnly("org.postgresql:postgresql")
+    //runtimeOnly("com.h2database:h2")
+    runtimeOnly("org.postgresql:postgresql")
 
     compileOnly("org.projectlombok:lombok")
 
