@@ -85,7 +85,7 @@ public class UserController {
      * @return All analysts in the database except the logged-in user that match the search query.
      */
     @GetMapping("/search/username")
-    public ResponseEntity<?> searchByUsername(@RequestParam String username, Principal principal) {
+    public ResponseEntity<?> searchByUsername(Principal principal, @RequestParam String username) {
         //TODO: add sub-status here or in another endpoint when subscriptions are implemented
         boolean loggedIn = (principal != null);
 
@@ -101,6 +101,14 @@ public class UserController {
         List<ProfileDTO> profiles = usersToProfiles(analystsFound);
         return ResponseEntity.ok().body(profiles);
     }
+
+    /*
+     ********************************
+     *                              *
+     * --- END OF API ENDPOINTS --- *
+     *                              *
+     ********************************
+     */
 
     /**
      * @param targetUser The user to be converted to a ProfileDTO

@@ -47,13 +47,14 @@ public class SecurityConfig {
                         "/users/register",
                         "/users/search/all",
                         "/users/search/username",
-                        "/users/username"
+                        "/users/username",
+                        "/stocks/all"
                 )
                 .permitAll()
 
                 //restrict specified endpoints to only authenticated users
                 .requestMatchers(
-                        "/something/very/private"
+                        "/dash/add-stock"
                 )
                 .hasRole("USER")
         );
