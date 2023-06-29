@@ -2,10 +2,7 @@ package se.onlyfin.onlyfin2backend.controller;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import se.onlyfin.onlyfin2backend.model.Stock;
 import se.onlyfin.onlyfin2backend.model.User;
 import se.onlyfin.onlyfin2backend.model.UserStock;
@@ -16,6 +13,7 @@ import se.onlyfin.onlyfin2backend.repository.UserStockRepository;
 import se.onlyfin.onlyfin2backend.service.UserService;
 
 import java.security.Principal;
+import java.util.Objects;
 
 @RequestMapping("/dash")
 @CrossOrigin(origins = "localhost:3000", allowCredentials = "true")
@@ -51,4 +49,21 @@ public class DashboardController {
 
         return ResponseEntity.ok().body(targetStock.getName());
     }
+
+    @DeleteMapping("/delete-stock")
+    public ResponseEntity<?> deleteStock(Principal principal, @RequestParam Integer targetUserStockId) {
+        User actingUser = userService.getUserOrException(principal.getName());
+
+        UserStock targetUserStock = userStockRepository.findById(targetUserStockId).orElse(null);
+        if (targetUserStock == null) {
+            return ResponseEntity.badRequest().build();
+        }
+        if (!Objects.equals(targetUserStock.getUser().getId(), actingUser.getId())) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        userStockRepository.deleteById(targetUserStockId);
+        return ResponseEntity.ok().build();
+    }
+
 }
