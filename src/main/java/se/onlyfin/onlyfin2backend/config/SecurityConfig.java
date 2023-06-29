@@ -55,7 +55,9 @@ public class SecurityConfig {
                 //restrict specified endpoints to only authenticated users
                 .requestMatchers(
                         "/dash/add-stock",
-                        "/dash/delete-stock"
+                        "/dash/delete-stock",
+                        "/dash/add-category",
+                        "/dash/delete-category"
                 )
                 .hasRole("USER")
         );
