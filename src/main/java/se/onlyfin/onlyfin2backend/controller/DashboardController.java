@@ -85,7 +85,7 @@ public class DashboardController {
 
         UserCategory userCategory = new UserCategory();
         userCategory.setUserStock(targetUserStock);
-        userCategory.setName(categoryCreationDTO.categoryName());
+        userCategory.setName(Objects.requireNonNullElse(categoryCreationDTO.categoryName(), "unnamed"));
         userCategoryRepository.save(userCategory);
 
         return ResponseEntity.ok().body(userCategory.getName());
