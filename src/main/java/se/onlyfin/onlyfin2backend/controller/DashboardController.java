@@ -4,6 +4,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import se.onlyfin.onlyfin2backend.DTO.CategoryCreationDTO;
+import se.onlyfin.onlyfin2backend.DTO.ModulePostDTO;
 import se.onlyfin.onlyfin2backend.model.Stock;
 import se.onlyfin.onlyfin2backend.model.User;
 import se.onlyfin.onlyfin2backend.model.UserCategory;
@@ -91,6 +92,13 @@ public class DashboardController {
         return ResponseEntity.ok().body(userCategory.getName());
     }
 
+    /*
+    @PutMapping("/update-category")
+    public ResponseEntity<?> updateCategoryName() {
+
+    }
+     */
+
     @DeleteMapping("/delete-category")
     public ResponseEntity<?> deleteCategory(Principal principal, @RequestParam Integer targetCategoryId) {
         User actingUser = userService.getUserOrException(principal.getName());
@@ -108,5 +116,17 @@ public class DashboardController {
 
         return ResponseEntity.ok().build();
     }
+
+    /*
+    @PostMapping("/add-module")
+    public ResponseEntity<?> addModule(Principal principal, @RequestBody ModulePostDTO modulePostDTO) {
+
+    }
+
+    @DeleteMapping("/delete-module")
+    public ResponseEntity<?> deleteModule(Principal principal, @RequestParam Integer moduleId) {
+
+    }
+     */
 
 }
