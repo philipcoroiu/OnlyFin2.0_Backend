@@ -1,4 +1,12 @@
 package se.onlyfin.onlyfin2backend.DTO;
 
-public record ModulePostDTO() {
+import com.fasterxml.jackson.databind.JsonNode;
+
+public record ModulePostDTO(Integer targetCategoryId,
+                            Integer height,
+                            Integer width,
+                            Integer xAxis,
+                            Integer yAxis,
+                            String type,
+                            JsonNode content) {
 }

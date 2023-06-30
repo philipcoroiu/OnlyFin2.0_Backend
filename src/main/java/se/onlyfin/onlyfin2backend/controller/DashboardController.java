@@ -1,15 +1,13 @@
 package se.onlyfin.onlyfin2backend.controller;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import se.onlyfin.onlyfin2backend.DTO.CategoryCreationDTO;
 import se.onlyfin.onlyfin2backend.DTO.CategoryUpdateDTO;
 import se.onlyfin.onlyfin2backend.DTO.ModulePostDTO;
-import se.onlyfin.onlyfin2backend.model.Stock;
-import se.onlyfin.onlyfin2backend.model.User;
-import se.onlyfin.onlyfin2backend.model.UserCategory;
-import se.onlyfin.onlyfin2backend.model.UserStock;
+import se.onlyfin.onlyfin2backend.model.*;
 import se.onlyfin.onlyfin2backend.repository.DashboardModuleRepository;
 import se.onlyfin.onlyfin2backend.repository.StockRepository;
 import se.onlyfin.onlyfin2backend.repository.UserCategoryRepository;
@@ -60,11 +58,11 @@ public class DashboardController {
 
         UserStock targetUserStock = userStockRepository.findById(targetUserStockId).orElse(null);
         if (targetUserStock == null) {
-            return ResponseEntity.badRequest().build();
+            return ResponseEntity.notFound().build();
         }
         //permission check
-        if (!Objects.equals(targetUserStock.getUser().getId(), actingUser.getId())) {
-            return ResponseEntity.badRequest().build();
+        if (!Objects.equals(actingUser.getId(), targetUserStock.getUser().getId())) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
 
         userStockRepository.deleteById(targetUserStockId);
@@ -78,11 +76,11 @@ public class DashboardController {
 
         UserStock targetUserStock = userStockRepository.findById(categoryCreationDTO.userStockId()).orElse(null);
         if (targetUserStock == null) {
-            return ResponseEntity.badRequest().build();
+            return ResponseEntity.notFound().build();
         }
         //permission check
         if (!Objects.equals(targetUserStock.getUser().getId(), actingUser.getId())) {
-            return ResponseEntity.badRequest().build();
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
 
         UserCategory userCategory = new UserCategory();
@@ -99,17 +97,17 @@ public class DashboardController {
 
         UserCategory targetCategory = userCategoryRepository.findById(categoryUpdateDTO.targetCategoryId()).orElse(null);
         if (targetCategory == null) {
-            return ResponseEntity.badRequest().build();
+            return ResponseEntity.notFound().build();
         }
         //permission check
         if (!Objects.equals(targetCategory.getUserStock().getUser().getId(), actingUser.getId())) {
-            return ResponseEntity.badRequest().build();
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
 
-       targetCategory.setName(categoryUpdateDTO.newCategoryName());
-       userCategoryRepository.save(targetCategory);
+        targetCategory.setName(categoryUpdateDTO.newCategoryName());
+        userCategoryRepository.save(targetCategory);
 
-       return ResponseEntity.ok().body(categoryUpdateDTO.newCategoryName());
+        return ResponseEntity.ok().body(categoryUpdateDTO.newCategoryName());
     }
 
     @DeleteMapping("/delete-category")
@@ -118,11 +116,11 @@ public class DashboardController {
 
         UserCategory targetCategory = userCategoryRepository.findById(targetCategoryId).orElse(null);
         if (targetCategory == null) {
-            return ResponseEntity.badRequest().build();
+            return ResponseEntity.notFound().build();
         }
         //permission check
         if (!Objects.equals(targetCategory.getUserStock().getUser().getId(), actingUser.getId())) {
-            return ResponseEntity.badRequest().build();
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
 
         userCategoryRepository.deleteById(targetCategoryId);
@@ -132,12 +130,48 @@ public class DashboardController {
 
     @PostMapping("/add-module")
     public ResponseEntity<?> addModule(Principal principal, @RequestBody ModulePostDTO modulePostDTO) {
-        return null;
+        User actingUser = userService.getUserOrException(principal.getName());
+
+        UserCategory userCategory = userCategoryRepository.findById(modulePostDTO.targetCategoryId()).orElse(null);
+        if (userCategory == null) {
+            return ResponseEntity.notFound().build();
+
+        }
+        //permission check
+        if (!Objects.equals(userCategory.getUserStock().getUser().getId(), actingUser.getId())) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
+        //TODO: Could add post validation
+        DashboardModule dashboardModule = new DashboardModule();
+        dashboardModule.setUserCategory(userCategory);
+        dashboardModule.setHeight(modulePostDTO.height());
+        dashboardModule.setWidth(modulePostDTO.width());
+        dashboardModule.setX(modulePostDTO.xAxis());
+        dashboardModule.setY(modulePostDTO.yAxis());
+        dashboardModule.setModuleType(modulePostDTO.type());
+        dashboardModule.setContent(modulePostDTO.content().asText());
+
+        dashboardModuleRepository.save(dashboardModule);
+
+        return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/delete-module")
     public ResponseEntity<?> deleteModule(Principal principal, @RequestParam Integer moduleId) {
-        return null;
-    }
+        User actingUser = userService.getUserOrException(principal.getName());
 
+        DashboardModule dashboardModule = dashboardModuleRepository.findById(moduleId).orElse(null);
+        if (dashboardModule == null) {
+            return ResponseEntity.notFound().build();
+        }
+        //permission check
+        if (!Objects.equals(actingUser.getId(), dashboardModule.getUserCategory().getUserStock().getUser().getId())) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
+        dashboardModuleRepository.delete(dashboardModule);
+
+        return ResponseEntity.ok().build();
+    }
 }
