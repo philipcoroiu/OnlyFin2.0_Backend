@@ -4,6 +4,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import se.onlyfin.onlyfin2backend.DTO.CategoryCreationDTO;
+import se.onlyfin.onlyfin2backend.DTO.CategoryUpdateDTO;
 import se.onlyfin.onlyfin2backend.DTO.ModulePostDTO;
 import se.onlyfin.onlyfin2backend.model.Stock;
 import se.onlyfin.onlyfin2backend.model.User;
@@ -37,7 +38,7 @@ public class DashboardController {
     }
 
     @PostMapping("/add-stock")
-    public ResponseEntity<?> addStock(Principal principal, @RequestParam Integer targetStockId) {
+    public ResponseEntity<String> addStock(Principal principal, @RequestParam Integer targetStockId) {
         User actingUser = userService.getUserOrException(principal.getName());
 
         Stock targetStock = stockRepository.findById(targetStockId).orElse(null);
@@ -72,7 +73,7 @@ public class DashboardController {
     }
 
     @PostMapping("/add-category")
-    public ResponseEntity<?> addCategory(Principal principal, @RequestBody CategoryCreationDTO categoryCreationDTO) {
+    public ResponseEntity<String> addCategory(Principal principal, @RequestBody CategoryCreationDTO categoryCreationDTO) {
         User actingUser = userService.getUserOrException(principal.getName());
 
         UserStock targetUserStock = userStockRepository.findById(categoryCreationDTO.userStockId()).orElse(null);
@@ -92,12 +93,24 @@ public class DashboardController {
         return ResponseEntity.ok().body(userCategory.getName());
     }
 
-    /*
     @PutMapping("/update-category")
-    public ResponseEntity<?> updateCategoryName() {
+    public ResponseEntity<String> updateCategoryName(Principal principal, @RequestBody CategoryUpdateDTO categoryUpdateDTO) {
+        User actingUser = userService.getUserOrException(principal.getName());
 
+        UserCategory targetCategory = userCategoryRepository.findById(categoryUpdateDTO.targetCategoryId()).orElse(null);
+        if (targetCategory == null) {
+            return ResponseEntity.badRequest().build();
+        }
+        //permission check
+        if (!Objects.equals(targetCategory.getUserStock().getUser().getId(), actingUser.getId())) {
+            return ResponseEntity.badRequest().build();
+        }
+
+       targetCategory.setName(categoryUpdateDTO.newCategoryName());
+       userCategoryRepository.save(targetCategory);
+
+       return ResponseEntity.ok().body(categoryUpdateDTO.newCategoryName());
     }
-     */
 
     @DeleteMapping("/delete-category")
     public ResponseEntity<?> deleteCategory(Principal principal, @RequestParam Integer targetCategoryId) {
@@ -117,7 +130,6 @@ public class DashboardController {
         return ResponseEntity.ok().build();
     }
 
-    /*
     @PostMapping("/add-module")
     public ResponseEntity<?> addModule(Principal principal, @RequestBody ModulePostDTO modulePostDTO) {
 
@@ -127,6 +139,5 @@ public class DashboardController {
     public ResponseEntity<?> deleteModule(Principal principal, @RequestParam Integer moduleId) {
 
     }
-     */
 
 }
