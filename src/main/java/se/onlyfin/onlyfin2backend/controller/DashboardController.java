@@ -132,12 +132,12 @@ public class DashboardController {
 
     @PostMapping("/add-module")
     public ResponseEntity<?> addModule(Principal principal, @RequestBody ModulePostDTO modulePostDTO) {
-
+        return null;
     }
 
     @DeleteMapping("/delete-module")
     public ResponseEntity<?> deleteModule(Principal principal, @RequestParam Integer moduleId) {
-
+        return null;
     }
 
 }
