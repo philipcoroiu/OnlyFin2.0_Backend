@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import se.onlyfin.onlyfin2backend.DTO.CategoryCreationDTO;
 import se.onlyfin.onlyfin2backend.DTO.CategoryUpdateDTO;
 import se.onlyfin.onlyfin2backend.DTO.ModulePostDTO;
+import se.onlyfin.onlyfin2backend.DTO.UserStockDTO;
 import se.onlyfin.onlyfin2backend.model.*;
 import se.onlyfin.onlyfin2backend.repository.DashboardModuleRepository;
 import se.onlyfin.onlyfin2backend.repository.StockRepository;
@@ -15,6 +16,8 @@ import se.onlyfin.onlyfin2backend.repository.UserStockRepository;
 import se.onlyfin.onlyfin2backend.service.UserService;
 
 import java.security.Principal;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 @RequestMapping("/dash")
@@ -173,5 +176,22 @@ public class DashboardController {
         dashboardModuleRepository.delete(dashboardModule);
 
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/fetch-user-stocks")
+    public ResponseEntity<?> fetchStocks(@RequestParam String targetUsername) {
+        User targetUser = userService.getUserOrNull(targetUsername);
+        if (targetUser == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        List<UserStock> userStocks = userStockRepository.findByUserId(targetUser.getId());
+
+        List<UserStockDTO> userStockDTOS = new ArrayList<>();
+        for (UserStock userStock : userStocks) {
+            userStockDTOS.add(new UserStockDTO(userStock.getId(), userStock.getStock()));
+        }
+
+        return ResponseEntity.ok().body(userStockDTOS);
     }
 }

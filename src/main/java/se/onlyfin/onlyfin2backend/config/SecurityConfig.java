@@ -48,7 +48,8 @@ public class SecurityConfig {
                         "/users/search/all",
                         "/users/search/username",
                         "/users/username",
-                        "/stocks/all"
+                        "/stocks/all",
+                        "/dash/fetch-user-stocks"
                 )
                 .permitAll()
 
