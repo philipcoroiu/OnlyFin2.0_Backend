@@ -49,7 +49,8 @@ public class SecurityConfig {
                         "/users/search/username",
                         "/users/username",
                         "/stocks/all",
-                        "/dash/fetch-user-stocks"
+                        "/dash/fetch-user-stocks",
+                        "/dash/fetch-categories-and-modules-under-user-stock"
                 )
                 .permitAll()
 

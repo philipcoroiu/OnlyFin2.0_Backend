@@ -1,7 +1,10 @@
 package se.onlyfin.onlyfin2backend.repository;
 
-import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.jpa.repository.JpaRepository;
 import se.onlyfin.onlyfin2backend.model.UserCategory;
 
-public interface UserCategoryRepository extends CrudRepository<UserCategory, Integer> {
+import java.util.List;
+
+public interface UserCategoryRepository extends JpaRepository<UserCategory, Integer> {
+    List<UserCategory> findByUserStockId(Integer userStockId);
 }

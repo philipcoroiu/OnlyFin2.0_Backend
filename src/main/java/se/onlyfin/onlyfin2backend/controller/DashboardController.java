@@ -4,10 +4,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-import se.onlyfin.onlyfin2backend.DTO.CategoryCreationDTO;
-import se.onlyfin.onlyfin2backend.DTO.CategoryUpdateDTO;
-import se.onlyfin.onlyfin2backend.DTO.ModulePostDTO;
-import se.onlyfin.onlyfin2backend.DTO.UserStockDTO;
+import se.onlyfin.onlyfin2backend.DTO.*;
 import se.onlyfin.onlyfin2backend.model.*;
 import se.onlyfin.onlyfin2backend.repository.DashboardModuleRepository;
 import se.onlyfin.onlyfin2backend.repository.StockRepository;
@@ -131,6 +128,7 @@ public class DashboardController {
         return ResponseEntity.ok().build();
     }
 
+    //TODO: Add validation of contents of post
     @PostMapping("/add-module")
     public ResponseEntity<?> addModule(Principal principal, @RequestBody ModulePostDTO modulePostDTO) {
         User actingUser = userService.getUserOrException(principal.getName());
@@ -145,7 +143,6 @@ public class DashboardController {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
 
-        //TODO: Could add post validation
         DashboardModule dashboardModule = new DashboardModule();
         dashboardModule.setUserCategory(userCategory);
         dashboardModule.setHeight(modulePostDTO.height());
@@ -194,4 +191,30 @@ public class DashboardController {
 
         return ResponseEntity.ok().body(userStockDTOS);
     }
+
+    @GetMapping("/fetch-categories-and-modules-under-user-stock")
+    public ResponseEntity<UserStockTabDTO> fetchCategoriesAndModulesUnderUserStock(@RequestParam Integer userStockId) {
+        UserStock userStock = userStockRepository.findById(userStockId).orElse(null);
+        if (userStock == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        List<UserCategory> userCategories = userCategoryRepository.findByUserStockId(userStockId);
+        List<UserCategoryTabDTO> categoryTabs = new ArrayList<>();
+        for (UserCategory currentUserCategory : userCategories) {
+            Integer currentUserCategoryId = currentUserCategory.getId();
+            List<DashboardModule> fetchedModules = dashboardModuleRepository.findByUserCategoryId(currentUserCategoryId);
+            List<ModuleDTO> categoryModules = new ArrayList<>();
+            for (DashboardModule currentModule : fetchedModules) {
+                categoryModules.add(new ModuleDTO(currentUserCategoryId, currentModule.getHeight(), currentModule.getWidth(), currentModule.getX(), currentModule.getY(), currentModule.getModuleType(), currentModule.getContent()));
+            }
+
+            categoryTabs.add(new UserCategoryTabDTO(currentUserCategoryId, categoryModules));
+        }
+
+        UserStockTabDTO userStockTabDTO = new UserStockTabDTO(userStockId, categoryTabs);
+
+        return ResponseEntity.ok().body(userStockTabDTO);
+    }
+
 }
