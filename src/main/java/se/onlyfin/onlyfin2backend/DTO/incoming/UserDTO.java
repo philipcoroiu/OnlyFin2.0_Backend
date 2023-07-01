@@ -1,4 +1,4 @@
-package se.onlyfin.onlyfin2backend.DTO;
+package se.onlyfin.onlyfin2backend.DTO.incoming;
 
 import jakarta.validation.constraints.Email;
 

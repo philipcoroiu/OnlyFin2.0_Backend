@@ -5,7 +5,7 @@ import org.springframework.lang.NonNull;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import se.onlyfin.onlyfin2backend.DTO.UserDTO;
+import se.onlyfin.onlyfin2backend.DTO.incoming.UserDTO;
 import se.onlyfin.onlyfin2backend.model.User;
 import se.onlyfin.onlyfin2backend.repository.UserRepository;
 

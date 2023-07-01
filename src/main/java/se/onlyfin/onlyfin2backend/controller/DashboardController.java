@@ -4,7 +4,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-import se.onlyfin.onlyfin2backend.DTO.*;
+import se.onlyfin.onlyfin2backend.DTO.incoming.CategoryCreationDTO;
+import se.onlyfin.onlyfin2backend.DTO.incoming.CategoryUpdateDTO;
+import se.onlyfin.onlyfin2backend.DTO.incoming.ModulePostDTO;
+import se.onlyfin.onlyfin2backend.DTO.outgoing.ModuleDTO;
+import se.onlyfin.onlyfin2backend.DTO.outgoing.UserCategoryTabDTO;
+import se.onlyfin.onlyfin2backend.DTO.outgoing.UserStockDTO;
+import se.onlyfin.onlyfin2backend.DTO.outgoing.UserStockTabDTO;
 import se.onlyfin.onlyfin2backend.model.*;
 import se.onlyfin.onlyfin2backend.repository.DashboardModuleRepository;
 import se.onlyfin.onlyfin2backend.repository.StockRepository;
@@ -47,7 +53,7 @@ public class DashboardController {
         UserStock userStock = new UserStock();
         userStock.setUser(actingUser);
         userStock.setStock(targetStock);
-        UserStock save = userStockRepository.save(userStock);
+        userStockRepository.save(userStock);
 
         return ResponseEntity.ok().body(targetStock.getName());
     }

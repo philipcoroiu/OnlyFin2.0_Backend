@@ -1,4 +1,4 @@
-package se.onlyfin.onlyfin2backend.DTO;
+package se.onlyfin.onlyfin2backend.DTO.outgoing;
 
 public record ModuleDTO(Integer targetCategoryId,
                         Integer height,

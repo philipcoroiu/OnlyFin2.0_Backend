@@ -4,8 +4,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-import se.onlyfin.onlyfin2backend.DTO.ProfileDTO;
-import se.onlyfin.onlyfin2backend.DTO.UserDTO;
+import se.onlyfin.onlyfin2backend.DTO.incoming.UserDTO;
+import se.onlyfin.onlyfin2backend.DTO.outgoing.ProfileDTO;
 import se.onlyfin.onlyfin2backend.model.User;
 import se.onlyfin.onlyfin2backend.service.UserService;
 
