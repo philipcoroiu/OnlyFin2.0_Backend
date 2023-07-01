@@ -66,7 +66,9 @@ public class SecurityConfig {
                         "/dash/add-module",
                         "/dash/update-module",
                         "/dash/delete-module",
-                        "/users/update-about-me"
+                        "/users/update-about-me",
+                        "/subscriptions/add",
+                        "/subscriptions/remove"
                 )
                 .hasRole("USER")
         );
