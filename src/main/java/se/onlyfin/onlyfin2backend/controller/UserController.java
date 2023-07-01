@@ -125,6 +125,16 @@ public class UserController {
         return ResponseEntity.ok().body(aboutMeText);
     }
 
+    @PutMapping("/update-about-me")
+    public ResponseEntity<?> updateAboutMe(Principal principal, @RequestBody String newAboutMe) {
+        User actingUser = userService.getUserOrException(principal.getName());
+
+        actingUser.setAboutMe(newAboutMe);
+        userService.saveUser(actingUser);
+
+        return ResponseEntity.ok().body(newAboutMe);
+    }
+
     /*
      ********************************
      *                              *
