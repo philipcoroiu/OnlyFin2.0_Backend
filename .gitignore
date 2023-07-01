@@ -342,3 +342,4 @@ gradle-app.setting
 *.bin
 .idea/dataSources.xml
 src/main/resources/database-config.properties
+.idea/modules/onlyfin2-backend.main.iml
