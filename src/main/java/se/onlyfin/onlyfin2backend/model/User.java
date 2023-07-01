@@ -36,6 +36,9 @@ public class User {
     @Column(name = "is_analyst")
     private boolean isAnalyst;
 
+    @Column(name = "about_me")
+    private String aboutMe = "Lorem ipsum";
+
     public Integer getId() {
         return id;
     }
@@ -93,6 +96,14 @@ public class User {
 
     public void setAnalyst(boolean analyst) {
         isAnalyst = analyst;
+    }
+
+    public String getAboutMe() {
+        return aboutMe;
+    }
+
+    public void setAboutMe(String aboutMe) {
+        this.aboutMe = aboutMe;
     }
 
     @Override
