@@ -51,6 +51,7 @@ public class SecurityConfig {
                         "/users/username",
                         "/users/about-me",
                         "/stocks/all",
+                        "/stocks/search",
                         "/dash/fetch-user-stocks",
                         "/dash/fetch-categories-and-modules-under-user-stock",
                         "/search/covers-stock"

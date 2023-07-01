@@ -5,6 +5,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import se.onlyfin.onlyfin2backend.model.Stock;
 import se.onlyfin.onlyfin2backend.repository.StockRepository;
 
@@ -29,6 +30,16 @@ public class StockController {
         }
 
         return ResponseEntity.ok().body(stocks);
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<?> findStocksByName(@RequestParam String name) {
+        List<Stock> stocksFound = stockRepository.findByNameContainingIgnoreCase(name);
+        if (stocksFound.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+
+        return ResponseEntity.ok().body(stocksFound);
     }
 
     public Optional<Stock> getStock(Integer id) {
