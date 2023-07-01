@@ -192,6 +192,7 @@ public class DashboardController {
         return ResponseEntity.ok().body(userStockDTOS);
     }
 
+    //TODO: Make this less shit
     @GetMapping("/fetch-categories-and-modules-under-user-stock")
     public ResponseEntity<UserStockTabDTO> fetchCategoriesAndModulesUnderUserStock(@RequestParam Integer userStockId) {
         UserStock userStock = userStockRepository.findById(userStockId).orElse(null);
