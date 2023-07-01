@@ -62,6 +62,7 @@ public class SecurityConfig {
                         "/dash/update-category",
                         "/dash/delete-category",
                         "/dash/add-module",
+                        "/dash/update-module",
                         "/dash/delete-module"
                 )
                 .hasRole("USER")

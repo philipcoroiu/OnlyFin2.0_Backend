@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+//TODO: Add module content validation?
 @RequestMapping("/dash")
 @CrossOrigin(origins = "localhost:3000", allowCredentials = "true")
 @Controller
@@ -134,7 +135,6 @@ public class DashboardController {
         return ResponseEntity.ok().build();
     }
 
-    //TODO: Add validation of contents of post
     @PostMapping("/add-module")
     public ResponseEntity<?> addModule(Principal principal, @RequestBody ModulePostDTO modulePostDTO) {
         User actingUser = userService.getUserOrException(principal.getName());
@@ -159,6 +159,30 @@ public class DashboardController {
         dashboardModule.setContent(modulePostDTO.content().asText());
 
         dashboardModuleRepository.save(dashboardModule);
+
+        return ResponseEntity.ok().build();
+    }
+
+    @PutMapping("/update-module")
+    public ResponseEntity<?> updateModule(Principal principal, @RequestParam Integer moduleId, @RequestBody ModulePostDTO moduleUpdateDTO) {
+        User actingUser = userService.getUserOrException(principal.getName());
+
+        DashboardModule targetModule = dashboardModuleRepository.findById(moduleId).orElse(null);
+        if (targetModule == null) {
+            return ResponseEntity.notFound().build();
+        }
+        //permission check
+        if (!Objects.equals(actingUser.getId(), targetModule.getUserCategory().getUserStock().getUser().getId())) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
+        targetModule.setHeight(moduleUpdateDTO.height());
+        targetModule.setWidth(moduleUpdateDTO.width());
+        targetModule.setX(moduleUpdateDTO.xAxis());
+        targetModule.setY(moduleUpdateDTO.yAxis());
+        targetModule.setModuleType(moduleUpdateDTO.type());
+        targetModule.setContent(moduleUpdateDTO.content().asText());
+        dashboardModuleRepository.save(targetModule);
 
         return ResponseEntity.ok().build();
     }
