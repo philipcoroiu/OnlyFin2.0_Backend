@@ -44,10 +44,12 @@ public class SecurityConfig {
                 .requestMatchers(
                         "/",
                         "/plz",
+                        "/users/whoami",
                         "/users/register",
                         "/users/search/all",
                         "/users/search/username",
                         "/users/username",
+                        "/users/about-me",
                         "/stocks/all",
                         "/dash/fetch-user-stocks",
                         "/dash/fetch-categories-and-modules-under-user-stock"

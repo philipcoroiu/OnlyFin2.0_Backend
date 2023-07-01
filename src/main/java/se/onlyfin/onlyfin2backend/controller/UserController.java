@@ -27,6 +27,17 @@ public class UserController {
         this.userService = userService;
     }
 
+    @GetMapping("/whoami")
+    public ResponseEntity<?> whoAmI(Principal principal) {
+        boolean loggedIn = (principal != null);
+
+        if (!loggedIn) {
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        }
+
+        return ResponseEntity.ok().body(principal.getName());
+    }
+
     /**
      * Registers a new user. If the username or email is already registered, a bad request is returned.
      *
@@ -100,6 +111,18 @@ public class UserController {
 
         List<ProfileDTO> profiles = usersToProfiles(analystsFound);
         return ResponseEntity.ok().body(profiles);
+    }
+
+    @GetMapping("/about-me")
+    public ResponseEntity<?> fetchAboutMe(@RequestParam String targetUsername) {
+        User targetUser = userService.getUserOrNull(targetUsername);
+        if (targetUser == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        String aboutMeText = targetUser.getAboutMe();
+
+        return ResponseEntity.ok().body(aboutMeText);
     }
 
     /*
