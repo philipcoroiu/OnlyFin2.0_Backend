@@ -9,6 +9,7 @@ import se.onlyfin.onlyfin2backend.model.Stock;
 import se.onlyfin.onlyfin2backend.repository.StockRepository;
 
 import java.util.List;
+import java.util.Optional;
 
 @RequestMapping("/stocks")
 @CrossOrigin(origins = "localhost:3000", allowCredentials = "true")
@@ -30,5 +31,8 @@ public class StockController {
         return ResponseEntity.ok().body(stocks);
     }
 
+    public Optional<Stock> getStock(Integer id) {
+        return stockRepository.findById(id);
+    }
 
 }

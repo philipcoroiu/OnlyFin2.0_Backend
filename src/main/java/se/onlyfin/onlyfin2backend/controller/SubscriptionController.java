@@ -16,7 +16,7 @@ import java.security.Principal;
 @Controller
 public class SubscriptionController {
     private final UserService userService;
-    private SubscriptionRepository subscriptionRepository;
+    private final SubscriptionRepository subscriptionRepository;
 
     public SubscriptionController(UserService userService, SubscriptionRepository subscriptionRepository) {
         this.userService = userService;

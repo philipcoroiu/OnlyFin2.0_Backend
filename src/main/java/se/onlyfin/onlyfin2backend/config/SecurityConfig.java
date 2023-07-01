@@ -52,7 +52,8 @@ public class SecurityConfig {
                         "/users/about-me",
                         "/stocks/all",
                         "/dash/fetch-user-stocks",
-                        "/dash/fetch-categories-and-modules-under-user-stock"
+                        "/dash/fetch-categories-and-modules-under-user-stock",
+                        "/search/covers-stock"
                 )
                 .permitAll()
 
