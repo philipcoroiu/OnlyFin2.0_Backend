@@ -6,9 +6,11 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import se.onlyfin.onlyfin2backend.DTO.incoming.UserDTO;
+import se.onlyfin.onlyfin2backend.DTO.outgoing.ProfileDTO;
 import se.onlyfin.onlyfin2backend.model.User;
 import se.onlyfin.onlyfin2backend.repository.UserRepository;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -193,6 +195,16 @@ public class UserService {
 
     public List<User> findAnalystsByName(String searchQuery) {
         return userRepository.findAllByisAnalystIsTrueAndUsernameContainsIgnoreCase(searchQuery);
+    }
+
+    public List<ProfileDTO> usersToProfiles(List<User> users) {
+        List<ProfileDTO> profiles = new ArrayList<>();
+
+        for (User currentUser : users) {
+            profiles.add(new ProfileDTO(currentUser.getId(), currentUser.getUsername()));
+        }
+
+        return profiles;
     }
 
     /**
