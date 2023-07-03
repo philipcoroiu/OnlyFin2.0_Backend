@@ -3,6 +3,7 @@ package se.onlyfin.onlyfin2backend.controller;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import se.onlyfin.onlyfin2backend.DTO.outgoing.ProfileDTO;
 import se.onlyfin.onlyfin2backend.model.Subscription;
 import se.onlyfin.onlyfin2backend.model.SubscriptionId;
 import se.onlyfin.onlyfin2backend.model.User;
@@ -10,6 +11,8 @@ import se.onlyfin.onlyfin2backend.repository.SubscriptionRepository;
 import se.onlyfin.onlyfin2backend.service.UserService;
 
 import java.security.Principal;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * This class is responsible for handling requests related to subscriptions.
@@ -100,6 +103,35 @@ public class SubscriptionController {
         boolean isSubscribed = subscriptionRepository.existsById(subscriptionId);
 
         return ResponseEntity.ok(isSubscribed);
+    }
+
+    @GetMapping("/list")
+    public ResponseEntity<?> getSubscriptionList(Principal principal) {
+        User actingUser = userService.getUserOrException(principal.getName());
+
+        List<User> subscriptions = subscriptionList(actingUser);
+        if (subscriptions.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+
+        List<ProfileDTO> profiles = userService.usersToProfiles(subscriptions);
+        return ResponseEntity.ok().body(profiles);
+    }
+
+    public boolean subCheck(User subscribingUser, User subscribedToUser) {
+        SubscriptionId subscriptionId = new SubscriptionId();
+        subscriptionId.setSubscriber(subscribingUser);
+        subscriptionId.setSubscribedTo(subscribedToUser);
+
+        return subscriptionRepository.existsById(subscriptionId);
+    }
+
+    public List<User> subscriptionList(User subscribingUser) {
+        List<Subscription> subscriptions = new ArrayList<>(subscriptionRepository.findByIdSubscriber(subscribingUser));
+
+        return subscriptions.stream()
+                .map(currentSubscription -> currentSubscription.getId().getSubscribedTo())
+                .toList();
     }
 
 }

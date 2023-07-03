@@ -71,7 +71,8 @@ public class SecurityConfig {
                         "/users/update-about-me",
                         "/subscriptions/add",
                         "/subscriptions/remove",
-                        "/subscriptions/check"
+                        "/subscriptions/check",
+                        "/subscriptions/list"
                 )
                 .hasRole("USER")
         );
