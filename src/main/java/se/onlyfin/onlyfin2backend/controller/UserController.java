@@ -31,7 +31,7 @@ public class UserController {
      * Returns the logged-in user's username if logged in, otherwise returns a 204 NO CONTENT.
      *
      * @param principal The logged-in user
-     * @return The logged-in user's username
+     * @return The logged-in user's username if logged in, otherwise returns a 204 NO CONTENT.
      */
     @GetMapping("/whoami")
     public ResponseEntity<?> whoAmI(Principal principal) {
