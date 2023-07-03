@@ -48,7 +48,7 @@ public class UserController {
      * Registers a new user. If the username or email is already registered, a bad request is returned.
      *
      * @param userDTO UserDTO containing username, password and email.
-     * @return ResponseEntity with status code 200 and username if registration was successful.
+     * @return HTTP 200 OK and username if registration was successful. HTTP 400 BAD REQUEST if registration failed.
      */
     @PostMapping("/register")
     public ResponseEntity<String> registerNewUser(@RequestBody UserDTO userDTO) {
@@ -64,7 +64,7 @@ public class UserController {
      * Returns all analysts in the database except the logged-in user.
      *
      * @param principal The logged-in user
-     * @return All analysts in the database except the logged-in user.
+     * @return All analysts in the database except the logged-in user. If no analysts are found, a 204 NO CONTENT is returned.
      */
     @GetMapping("/search/all")
     public ResponseEntity<?> findAll(Principal principal) {
@@ -87,7 +87,7 @@ public class UserController {
      * Returns the details of a specific user.
      *
      * @param username The username of the analyst to be returned
-     * @return The user with the given username if it exists.
+     * @return The user with the given username. If no user is found, a 404 NOT FOUND is returned.
      */
     @GetMapping("/username")
     public ResponseEntity<?> findByUsername(@RequestParam String username) {
@@ -106,6 +106,7 @@ public class UserController {
      * @param username  The search query
      * @param principal The logged-in user
      * @return All analysts in the database except the logged-in user that match the search query.
+     * If no analysts are found, a 204 NO CONTENT is returned.
      */
     @GetMapping("/search/username")
     public ResponseEntity<?> searchByUsername(Principal principal, @RequestParam String username) {
@@ -129,7 +130,7 @@ public class UserController {
      * Returns the "about me" text of a specific user.
      *
      * @param targetUsername The username of the user to be fetched
-     * @return The about me text of the user with the given username if it exists.
+     * @return The about me text of the user with the given username. If no user is found, a 404 NOT FOUND is returned.
      */
     @GetMapping("/about-me")
     public ResponseEntity<?> fetchAboutMe(@RequestParam String targetUsername) {

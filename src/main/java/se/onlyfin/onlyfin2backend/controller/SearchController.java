@@ -38,6 +38,8 @@ public class SearchController {
      *
      * @param targetStockId The id of the stock to find analysts for.
      * @return A list of analysts that cover the target stock.
+     * If no analysts cover the target stock, a 204 NO CONTENT is returned.
+     * If the target stock does not exist, a 404 NOT FOUND is returned.
      */
     @GetMapping("/covers-stock")
     public ResponseEntity<List<ProfileDTO>> findAnalystsThatCoverStock(@RequestParam Integer targetStockId) {

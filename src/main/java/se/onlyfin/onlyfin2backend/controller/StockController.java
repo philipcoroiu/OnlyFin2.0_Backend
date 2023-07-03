@@ -28,7 +28,7 @@ public class StockController {
     /**
      * Returns all stocks in the database. (Not user stocks)
      *
-     * @return all stocks in the database
+     * @return all stocks in the database. If no stocks exist, a 204 NO CONTENT is returned.
      */
     @GetMapping("/all")
     public ResponseEntity<List<Stock>> getAllStocks() {
@@ -44,7 +44,7 @@ public class StockController {
      * Returns all stocks that match the search query. (Not user stocks)
      *
      * @param name the name of the stock to search for
-     * @return stocks that match the search query
+     * @return stocks that match the search query. If no stocks match the search query, a 204 NO CONTENT is returned.
      */
     @GetMapping("/search")
     public ResponseEntity<?> findStocksByName(@RequestParam String name) {
