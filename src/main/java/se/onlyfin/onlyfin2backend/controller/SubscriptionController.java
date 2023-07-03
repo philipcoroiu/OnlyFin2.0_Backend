@@ -78,4 +78,28 @@ public class SubscriptionController {
         return ResponseEntity.ok().build();
     }
 
+    /**
+     * @param principal     The logged-in user.
+     * @param targetUsername The username of the user to check if the logged-in user is subscribed to.
+     * @return If the logged-in user is subscribed to the user with the given username.
+     * 404 Not Found if the target user does not exist.
+     */
+    @GetMapping("/check")
+    public ResponseEntity<?> checkSubscription(Principal principal, @RequestParam String targetUsername) {
+        User actingUser = userService.getUserOrException(principal.getName());
+
+        User targetUser = userService.getUserOrNull(targetUsername);
+        if (targetUser == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        SubscriptionId subscriptionId = new SubscriptionId();
+        subscriptionId.setSubscriber(actingUser);
+        subscriptionId.setSubscribedTo(targetUser);
+
+        boolean isSubscribed = subscriptionRepository.existsById(subscriptionId);
+
+        return ResponseEntity.ok(isSubscribed);
+    }
+
 }
