@@ -2,10 +2,12 @@ package se.onlyfin.onlyfin2backend.controller;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import se.onlyfin.onlyfin2backend.DTO.incoming.UserDTO;
 import se.onlyfin.onlyfin2backend.DTO.outgoing.ProfileDTO;
+import se.onlyfin.onlyfin2backend.DTO.outgoing.ProfileSubInfoDTO;
 import se.onlyfin.onlyfin2backend.model.User;
 import se.onlyfin.onlyfin2backend.service.UserService;
 
@@ -22,9 +24,11 @@ import java.util.List;
 @Controller
 public class UserController {
     private final UserService userService;
+    private final SubscriptionController subscriptionController;
 
-    public UserController(UserService userService) {
+    public UserController(UserService userService, SubscriptionController subscriptionController) {
         this.userService = userService;
+        this.subscriptionController = subscriptionController;
     }
 
     /**
@@ -61,7 +65,7 @@ public class UserController {
     }
 
     /**
-     * Returns all analysts in the database except the logged-in user.
+     * Returns all analysts in the database except the logged-in user. Includes subscription information.
      *
      * @param principal The logged-in user
      * @return All analysts in the database except the logged-in user. If no analysts are found, a 204 NO CONTENT is returned.
@@ -69,39 +73,44 @@ public class UserController {
     @GetMapping("/search/all")
     public ResponseEntity<?> findAll(Principal principal) {
         boolean loggedIn = (principal != null);
+        User loggedInUser = null;
 
         List<User> analysts = userService.getAllAnalysts();
         if (loggedIn) {
-            User loggedInUser = userService.getUserOrException(principal.getName());
+            loggedInUser = userService.getUserOrException(principal.getName());
             analysts.remove(loggedInUser);
         }
         if (analysts.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NO_CONTENT).body("No users were found");
         }
 
-        List<ProfileDTO> profiles = usersToProfiles(analysts);
+        List<ProfileSubInfoDTO> profiles = usersToProfilesWithSubInfo(loggedInUser, analysts);
         return ResponseEntity.ok().body(profiles);
     }
 
     /**
-     * Returns the details of a specific user.
+     * Returns the details of a specific user. Includes subscription information.
      *
-     * @param username The username of the analyst to be returned
+     * @param principal the logged-in user
+     * @param username  The username of the analyst to be returned
      * @return The user with the given username. If no user is found, a 404 NOT FOUND is returned.
      */
     @GetMapping("/username")
-    public ResponseEntity<?> findByUsername(@RequestParam String username) {
+    public ResponseEntity<?> findByUsername(Principal principal, @RequestParam String username) {
+        //optional as it is only needed for sub check. will fall back to subscribing=false if not logged in
+        User actingUser = userService.getUserOrNull(principal.getName());
+
         User targetUser = userService.getAnalystOrNull(username);
         if (targetUser == null) {
             return ResponseEntity.notFound().build();
         }
 
-        ProfileDTO profile = userToProfile(targetUser);
+        ProfileSubInfoDTO profile = userToProfileWithSubInfo(actingUser, targetUser);
         return ResponseEntity.ok().body(profile);
     }
 
     /**
-     * Returns all analysts that match the search query. Excludes the logged-in user.
+     * Returns all analysts that match the search query. Excludes the logged-in user. Includes subscription information.
      *
      * @param username  The search query
      * @param principal The logged-in user
@@ -110,19 +119,19 @@ public class UserController {
      */
     @GetMapping("/search/username")
     public ResponseEntity<?> searchByUsername(Principal principal, @RequestParam String username) {
-        //TODO: add sub-status here or in another endpoint when subscriptions are implemented
         boolean loggedIn = (principal != null);
+        User loggedInUser = null;
 
         List<User> analystsFound = userService.findAnalystsByName(username);
         if (loggedIn) {
-            User loggedInUser = userService.getUserOrException(principal.getName());
+            loggedInUser = userService.getUserOrException(principal.getName());
             analystsFound.remove(loggedInUser);
         }
         if (analystsFound.isEmpty()) {
             return ResponseEntity.noContent().build();
         }
 
-        List<ProfileDTO> profiles = usersToProfiles(analystsFound);
+        List<ProfileSubInfoDTO> profiles = usersToProfilesWithSubInfo(loggedInUser, analystsFound);
         return ResponseEntity.ok().body(profiles);
     }
 
@@ -186,15 +195,52 @@ public class UserController {
      * @return A list of ProfileDTOs containing the id and username of the given users.
      */
     public List<ProfileDTO> usersToProfiles(List<User> targetUsers) {
-        if (targetUsers == null) {
-            return null;
+        List<ProfileDTO> profiles = new ArrayList<>();
+        for (User currentUser : targetUsers) {
+            profiles.add(new ProfileDTO(currentUser.getId(), currentUser.getUsername()));
         }
 
-        List<ProfileDTO> profiles = new ArrayList<>();
-        targetUsers.forEach((currentUser) ->
-                profiles.add(new ProfileDTO(currentUser.getId(), currentUser.getUsername())));
-
         return profiles;
+    }
+
+    public ProfileSubInfoDTO userToProfileWithSubInfo(@Nullable User actingUser, User targetUser) {
+        boolean loggedIn = (actingUser != null);
+        if (!loggedIn) {
+            return new ProfileSubInfoDTO(targetUser.getId(), targetUser.getUsername(), false);
+        }
+
+        boolean isSubscribed = subscriptionController.subCheck(actingUser, targetUser);
+
+        return new ProfileSubInfoDTO(targetUser.getId(), targetUser.getUsername(), isSubscribed);
+    }
+
+    public List<ProfileSubInfoDTO> usersToProfilesWithSubInfo(@Nullable User actingUser, List<User> targetUsers) {
+        boolean loggedIn = (actingUser != null);
+        if (!loggedIn) {
+            List<ProfileSubInfoDTO> profilesWithFallbackSubInfo = new ArrayList<>();
+            for (User currentUser : targetUsers) {
+                profilesWithFallbackSubInfo.add(new ProfileSubInfoDTO(
+                        currentUser.getId(),
+                        currentUser.getUsername(),
+                        false
+                ));
+            }
+
+            return profilesWithFallbackSubInfo;
+        }
+
+        List<User> subscriptions = subscriptionController.subscriptionList(actingUser);
+        List<ProfileSubInfoDTO> profilesWithSubInfo = new ArrayList<>();
+        for (User currentUser : targetUsers) {
+            boolean isSubscribed = subscriptions.contains(currentUser);
+            profilesWithSubInfo.add(new ProfileSubInfoDTO(
+                    currentUser.getId(),
+                    currentUser.getUsername(),
+                    isSubscribed
+            ));
+        }
+
+        return profilesWithSubInfo;
     }
 
 }

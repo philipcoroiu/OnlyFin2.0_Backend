@@ -105,6 +105,12 @@ public class SubscriptionController {
         return ResponseEntity.ok(isSubscribed);
     }
 
+    /**
+     * Returns a list of users that the logged-in user is subscribed to.
+     *
+     * @param principal The logged-in user.
+     * @return A list of users that the logged-in user is subscribed to. 204 No Content if no subscriptions exists.
+     */
     @GetMapping("/list")
     public ResponseEntity<?> getSubscriptionList(Principal principal) {
         User actingUser = userService.getUserOrException(principal.getName());
