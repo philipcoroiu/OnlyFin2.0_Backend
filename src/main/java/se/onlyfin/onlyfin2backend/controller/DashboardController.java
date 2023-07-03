@@ -23,6 +23,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+/**
+ * This class is responsible for handling requests related to the dashboard.
+ */
 //TODO: Add module content validation?
 @RequestMapping("/dash")
 @CrossOrigin(origins = "localhost:3000", allowCredentials = "true")
@@ -42,6 +45,13 @@ public class DashboardController {
         this.dashboardModuleRepository = dashboardModuleRepository;
     }
 
+    /**
+     * Adds a user stock to the logged-in user's dashboard
+     *
+     * @param principal     The logged-in user
+     * @param targetStockId The id of the stock to add
+     * @return 200 OK if successful, 404 Not Found if the stock doesn't exist
+     */
     @PostMapping("/add-stock")
     public ResponseEntity<String> addStock(Principal principal, @RequestParam Integer targetStockId) {
         User actingUser = userService.getUserOrException(principal.getName());
@@ -59,6 +69,14 @@ public class DashboardController {
         return ResponseEntity.ok().body(targetStock.getName());
     }
 
+    /**
+     * Deletes a user stock from the logged-in user's dashboard
+     *
+     * @param principal         The logged-in user
+     * @param targetUserStockId The id of the user stock to delete
+     * @return 200 OK if successful, 404 Not Found if the user stock doesn't exist,
+     * 403 Forbidden if the user doesn't own the user stock
+     */
     @DeleteMapping("/delete-stock")
     public ResponseEntity<?> deleteStock(Principal principal, @RequestParam Integer targetUserStockId) {
         User actingUser = userService.getUserOrException(principal.getName());
@@ -77,6 +95,14 @@ public class DashboardController {
         return ResponseEntity.ok().build();
     }
 
+    /**
+     * Adds a category to the logged-in user's dashboard for the given user stock
+     *
+     * @param principal           The logged-in user
+     * @param categoryCreationDTO The category creation DTO
+     * @return 200 OK if successful, 404 Not Found if the user stock doesn't exist,
+     * 403 Forbidden if the user doesn't own the user stock
+     */
     @PostMapping("/add-category")
     public ResponseEntity<String> addCategory(Principal principal, @RequestBody CategoryCreationDTO categoryCreationDTO) {
         User actingUser = userService.getUserOrException(principal.getName());
@@ -98,6 +124,13 @@ public class DashboardController {
         return ResponseEntity.ok().body(userCategory.getName());
     }
 
+    /**
+     * Updates the name of a specified category on the logged-in user's dashboard
+     *
+     * @param principal         The logged-in user
+     * @param categoryUpdateDTO The category update DTO
+     * @return 200 OK if successful, 404 Not Found if the category doesn't exist, 403 Forbidden if the user doesn't own the category
+     */
     @PutMapping("/update-category")
     public ResponseEntity<String> updateCategoryName(Principal principal, @RequestBody CategoryUpdateDTO categoryUpdateDTO) {
         User actingUser = userService.getUserOrException(principal.getName());
@@ -117,6 +150,13 @@ public class DashboardController {
         return ResponseEntity.ok().body(categoryUpdateDTO.newCategoryName());
     }
 
+    /**
+     * Deletes a category from the logged-in user's dashboard
+     *
+     * @param principal        The logged-in user
+     * @param targetCategoryId The id of the category to delete
+     * @return 200 OK if successful, 404 Not Found if the category doesn't exist, 403 Forbidden if the user doesn't own the category
+     */
     @DeleteMapping("/delete-category")
     public ResponseEntity<?> deleteCategory(Principal principal, @RequestParam Integer targetCategoryId) {
         User actingUser = userService.getUserOrException(principal.getName());
@@ -135,6 +175,13 @@ public class DashboardController {
         return ResponseEntity.ok().build();
     }
 
+    /**
+     * Adds a module to the specified category on the logged-in user's dashboard
+     *
+     * @param principal     The logged-in user
+     * @param modulePostDTO The module post DTO
+     * @return 200 OK if successful, 404 Not Found if the category doesn't exist, 403 Forbidden if the user doesn't own the category
+     */
     @PostMapping("/add-module")
     public ResponseEntity<?> addModule(Principal principal, @RequestBody ModulePostDTO modulePostDTO) {
         User actingUser = userService.getUserOrException(principal.getName());
@@ -163,6 +210,14 @@ public class DashboardController {
         return ResponseEntity.ok().build();
     }
 
+    /**
+     * Updates a module on the logged-in user's dashboard
+     *
+     * @param principal       The logged-in user
+     * @param moduleId        The id of the module to update
+     * @param moduleUpdateDTO The module update DTO
+     * @return 200 OK if successful, 404 Not Found if the module doesn't exist, 403 Forbidden if the user doesn't own the module
+     */
     @PutMapping("/update-module")
     public ResponseEntity<?> updateModule(Principal principal, @RequestParam Integer moduleId, @RequestBody ModulePostDTO moduleUpdateDTO) {
         User actingUser = userService.getUserOrException(principal.getName());
@@ -187,6 +242,13 @@ public class DashboardController {
         return ResponseEntity.ok().build();
     }
 
+    /**
+     * Deletes a module from the logged-in user's dashboard
+     *
+     * @param principal The logged-in user
+     * @param moduleId  The id of the module to delete
+     * @return 200 OK if successful, 404 Not Found if the module doesn't exist, 403 Forbidden if the user doesn't own the module
+     */
     @DeleteMapping("/delete-module")
     public ResponseEntity<?> deleteModule(Principal principal, @RequestParam Integer moduleId) {
         User actingUser = userService.getUserOrException(principal.getName());
@@ -205,6 +267,12 @@ public class DashboardController {
         return ResponseEntity.ok().build();
     }
 
+    /**
+     * Fetches all stocks added by the target user
+     *
+     * @param targetUsername The username of the user to fetch stocks from
+     * @return 200 OK if successful, 404 Not Found if the user doesn't exist
+     */
     @GetMapping("/fetch-user-stocks")
     public ResponseEntity<?> fetchStocks(@RequestParam String targetUsername) {
         User targetUser = userService.getUserOrNull(targetUsername);
@@ -222,6 +290,12 @@ public class DashboardController {
         return ResponseEntity.ok().body(userStockDTOS);
     }
 
+    /**
+     * Fetches all categories and modules under a target user stock
+     *
+     * @param userStockId The id of the user stock to fetch categories and modules from
+     * @return 200 OK if successful, 404 Not Found if the user stock doesn't exist
+     */
     //TODO: Make this less shit
     @GetMapping("/fetch-categories-and-modules-under-user-stock")
     public ResponseEntity<UserStockTabDTO> fetchCategoriesAndModulesUnderUserStock(@RequestParam Integer userStockId) {

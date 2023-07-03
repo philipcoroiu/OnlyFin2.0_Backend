@@ -27,6 +27,12 @@ public class UserController {
         this.userService = userService;
     }
 
+    /**
+     * Returns the logged-in user's username if logged in, otherwise returns a 204 NO CONTENT.
+     *
+     * @param principal The logged-in user
+     * @return The logged-in user's username
+     */
     @GetMapping("/whoami")
     public ResponseEntity<?> whoAmI(Principal principal) {
         boolean loggedIn = (principal != null);
@@ -55,6 +61,8 @@ public class UserController {
     }
 
     /**
+     * Returns all analysts in the database except the logged-in user.
+     *
      * @param principal The logged-in user
      * @return All analysts in the database except the logged-in user.
      */
@@ -76,6 +84,8 @@ public class UserController {
     }
 
     /**
+     * Returns the details of a specific user.
+     *
      * @param username The username of the analyst to be returned
      * @return The user with the given username if it exists.
      */
@@ -91,6 +101,8 @@ public class UserController {
     }
 
     /**
+     * Returns all analysts that match the search query. Excludes the logged-in user.
+     *
      * @param username  The search query
      * @param principal The logged-in user
      * @return All analysts in the database except the logged-in user that match the search query.
@@ -113,6 +125,12 @@ public class UserController {
         return ResponseEntity.ok().body(profiles);
     }
 
+    /**
+     * Returns the "about me" text of a specific user.
+     *
+     * @param targetUsername The username of the user to be fetched
+     * @return The about me text of the user with the given username if it exists.
+     */
     @GetMapping("/about-me")
     public ResponseEntity<?> fetchAboutMe(@RequestParam String targetUsername) {
         User targetUser = userService.getUserOrNull(targetUsername);
@@ -125,6 +143,13 @@ public class UserController {
         return ResponseEntity.ok().body(aboutMeText);
     }
 
+    /**
+     * Updates the "about me" text of the logged-in user.
+     *
+     * @param principal  The logged-in user
+     * @param newAboutMe The new "about me" text
+     * @return The new "about me" text
+     */
     @PutMapping("/update-about-me")
     public ResponseEntity<?> updateAboutMe(Principal principal, @RequestBody String newAboutMe) {
         User actingUser = userService.getUserOrException(principal.getName());

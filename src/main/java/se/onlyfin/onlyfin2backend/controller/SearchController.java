@@ -16,6 +16,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+/**
+ * This class is responsible for handling requests related to searching for users and stocks.
+ */
 @RequestMapping("/search")
 @CrossOrigin(origins = "localhost:3000", allowCredentials = "true")
 @Controller
@@ -30,6 +33,12 @@ public class SearchController {
         this.userStockRepository = userStockRepository;
     }
 
+    /**
+     * Finds analysts that cover the target stock.
+     *
+     * @param targetStockId The id of the stock to find analysts for.
+     * @return A list of analysts that cover the target stock.
+     */
     @GetMapping("/covers-stock")
     public ResponseEntity<List<ProfileDTO>> findAnalystsThatCoverStock(@RequestParam Integer targetStockId) {
         Stock targetStock = stockController.getStock(targetStockId).orElse(null);

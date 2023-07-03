@@ -11,6 +11,9 @@ import se.onlyfin.onlyfin2backend.service.UserService;
 
 import java.security.Principal;
 
+/**
+ * This class is responsible for handling requests related to subscriptions.
+ */
 @RequestMapping("/subscriptions")
 @CrossOrigin(origins = "localhost:3000", allowCredentials = "true")
 @Controller
@@ -23,6 +26,13 @@ public class SubscriptionController {
         this.subscriptionRepository = subscriptionRepository;
     }
 
+    /**
+     * Adds a subscription for the logged-in user to a user with the given username.
+     *
+     * @param principal      The logged-in user.
+     * @param targetUsername The username of the user to subscribe to.
+     * @return 200 OK if the subscription was successful, 404 Not Found if the target user does not exist.
+     */
     @PutMapping("/add")
     public ResponseEntity<?> subscribe(Principal principal, @RequestParam String targetUsername) {
         User actingUser = userService.getUserOrException(principal.getName());
@@ -43,6 +53,13 @@ public class SubscriptionController {
         return ResponseEntity.ok().build();
     }
 
+    /**
+     * Removes a subscription for the logged-in user from a user with the given username.
+     *
+     * @param principal      The logged-in user.
+     * @param targetUsername The username of the user to unsubscribe from.
+     * @return 200 OK if the unsubscription was successful, 404 Not Found if the target user does not exist.
+     */
     @DeleteMapping("/remove")
     public ResponseEntity<?> unsubscribe(Principal principal, @RequestParam String targetUsername) {
         User actingUser = userService.getUserOrException(principal.getName());
