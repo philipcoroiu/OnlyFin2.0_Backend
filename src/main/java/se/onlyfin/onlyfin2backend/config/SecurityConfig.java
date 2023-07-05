@@ -43,6 +43,7 @@ public class SecurityConfig {
                 //allow specified endpoints for unauthenticated users
                 .requestMatchers(
                         "/",
+                        "/login",
                         "/plz",
                         "/users/whoami",
                         "/users/register",
@@ -60,7 +61,6 @@ public class SecurityConfig {
 
                 //restrict specified endpoints to only authenticated users
                 .requestMatchers(
-                        "/logout",
                         "/dash/add-stock",
                         "/dash/delete-stock",
                         "/dash/add-category",
@@ -81,8 +81,7 @@ public class SecurityConfig {
         http.formLogin(loginForm -> loginForm
                 .loginProcessingUrl("/plz")
                 .successHandler(new LoginSuccessHandlerDoNothingImpl())
-                .failureHandler(new LoginFailureHandlerDoNothingImpl()))
-                .logout(httpSecurityLogoutConfigurer -> httpSecurityLogoutConfigurer.logoutSuccessHandler(new LogoutSuccessDoNothingHandlerImpl()));
+                .failureHandler(new LoginFailureHandlerDoNothingImpl()));
 
         http.exceptionHandling(exceptionHandling -> exceptionHandling
                 .authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)));
