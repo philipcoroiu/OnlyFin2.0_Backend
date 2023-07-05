@@ -81,7 +81,8 @@ public class SecurityConfig {
         http.formLogin(loginForm -> loginForm
                 .loginProcessingUrl("/plz")
                 .successHandler(new LoginSuccessHandlerDoNothingImpl())
-                .failureHandler(new LoginFailureHandlerDoNothingImpl()));
+                .failureHandler(new LoginFailureHandlerDoNothingImpl()))
+                .logout(httpSecurityLogoutConfigurer -> httpSecurityLogoutConfigurer.logoutSuccessHandler(new LogoutSuccessDoNothingHandlerImpl()));
 
         http.exceptionHandling(exceptionHandling -> exceptionHandling
                 .authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)));
