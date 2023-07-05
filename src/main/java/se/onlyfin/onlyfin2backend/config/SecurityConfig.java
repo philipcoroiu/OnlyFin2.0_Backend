@@ -60,6 +60,7 @@ public class SecurityConfig {
 
                 //restrict specified endpoints to only authenticated users
                 .requestMatchers(
+                        "/logout",
                         "/dash/add-stock",
                         "/dash/delete-stock",
                         "/dash/add-category",
