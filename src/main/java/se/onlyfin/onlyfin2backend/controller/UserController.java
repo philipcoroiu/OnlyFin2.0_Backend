@@ -5,6 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import se.onlyfin.onlyfin2backend.DTO.incoming.PasswordChangeDTO;
 import se.onlyfin.onlyfin2backend.DTO.incoming.UserDTO;
 import se.onlyfin.onlyfin2backend.DTO.outgoing.ProfileDTO;
 import se.onlyfin.onlyfin2backend.DTO.outgoing.ProfileSubInfoDTO;
@@ -168,6 +169,23 @@ public class UserController {
         userService.saveUser(actingUser);
 
         return ResponseEntity.ok().body(newAboutMe);
+    }
+
+    /**
+     * @param principal The logged-in user
+     * @param passwordChangeDTO Old password confirmation and the new password
+     * @return HTTP 200 OK if the password was changed successfully. HTTP 400 BAD REQUEST if the password change failed.
+     */
+    @PostMapping("/password-change")
+    public ResponseEntity<String> changeUserPassword(Principal principal, @RequestBody PasswordChangeDTO passwordChangeDTO) {
+        User targetUser = userService.getUserOrException(principal.getName());
+
+        boolean successful = userService.passwordChange(targetUser, passwordChangeDTO.oldPassword(), passwordChangeDTO.newPassword());
+        if (!successful) {
+            return ResponseEntity.badRequest().body("Password change failed");
+        }
+
+        return ResponseEntity.ok().body("Updated password successfully");
     }
 
     /*

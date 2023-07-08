@@ -70,6 +70,7 @@ public class SecurityConfig {
                         "/dash/update-module",
                         "/dash/delete-module",
                         "/users/update-about-me",
+                        "/users/password-change",
                         "/subscriptions/add",
                         "/subscriptions/remove",
                         "/subscriptions/check",

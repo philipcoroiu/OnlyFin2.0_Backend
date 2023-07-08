@@ -311,7 +311,14 @@ public class DashboardController {
             List<DashboardModule> fetchedModules = dashboardModuleRepository.findByUserCategoryId(currentUserCategoryId);
             List<ModuleDTO> categoryModules = new ArrayList<>();
             for (DashboardModule currentModule : fetchedModules) {
-                categoryModules.add(new ModuleDTO(currentUserCategoryId, currentModule.getHeight(), currentModule.getWidth(), currentModule.getX(), currentModule.getY(), currentModule.getModuleType(), currentModule.getContent()));
+                categoryModules.add(new ModuleDTO(
+                        currentUserCategoryId,
+                        currentModule.getHeight(),
+                        currentModule.getWidth(),
+                        currentModule.getX(),
+                        currentModule.getY(),
+                        currentModule.getModuleType(),
+                        currentModule.getContent()));
             }
 
             categoryTabs.add(new UserCategoryTabDTO(currentUserCategoryId, categoryModules));

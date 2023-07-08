@@ -130,12 +130,12 @@ public class UserService {
 
     /**
      * @param targetUser              The user to be updated.
-     * @param oldPasswordConfirmation The old password to be checked.
+     * @param currentPasswordConfirmation The old password to be checked.
      * @param newPassword             The new password to be set.
      * @return If the password was changed
      */
-    public boolean passwordChange(User targetUser, String oldPasswordConfirmation, String newPassword) {
-        if (!passwordMatch(oldPasswordConfirmation, targetUser.getPassword())) {
+    public boolean passwordChange(User targetUser, String currentPasswordConfirmation, String newPassword) {
+        if (!passwordMatch(currentPasswordConfirmation, targetUser.getPassword())) {
             return false;
         }
 
