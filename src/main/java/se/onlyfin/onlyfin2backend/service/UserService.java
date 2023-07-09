@@ -90,7 +90,7 @@ public class UserService {
         userToRegister.setEnabled(true);
 
         userToRegister.setEmail(userDTO.email());
-        userToRegister.setUsername(userDTO.username().toLowerCase());
+        userToRegister.setUsername(userDTO.username().replaceAll("\\s", "").toLowerCase());
         userToRegister.setPassword(passwordEncoder.encode(userDTO.password()));
 
         userToRegister.setRoles("ROLE_USER");
@@ -129,9 +129,9 @@ public class UserService {
     }
 
     /**
-     * @param targetUser              The user to be updated.
+     * @param targetUser                  The user to be updated.
      * @param currentPasswordConfirmation The old password to be checked.
-     * @param newPassword             The new password to be set.
+     * @param newPassword                 The new password to be set.
      * @return If the password was changed
      */
     public boolean passwordChange(User targetUser, String currentPasswordConfirmation, String newPassword) {
