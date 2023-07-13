@@ -5,9 +5,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import se.onlyfin.onlyfin2backend.DTO.incoming.AboutMeUpdateDTO;
 import se.onlyfin.onlyfin2backend.DTO.incoming.PasswordChangeDTO;
 import se.onlyfin.onlyfin2backend.DTO.incoming.UserDTO;
 import se.onlyfin.onlyfin2backend.DTO.outgoing.ProfileDTO;
+import se.onlyfin.onlyfin2backend.DTO.outgoing.ProfileSubInfoAboutMeDTO;
 import se.onlyfin.onlyfin2backend.DTO.outgoing.ProfileSubInfoDTO;
 import se.onlyfin.onlyfin2backend.model.User;
 import se.onlyfin.onlyfin2backend.service.UserService;
@@ -98,15 +100,19 @@ public class UserController {
      */
     @GetMapping("/username")
     public ResponseEntity<?> findByUsername(Principal principal, @RequestParam String username) {
-        //optional as it is only needed for sub check. will fall back to subscribing=false if not logged in
-        User actingUser = userService.getUserOrNull(principal.getName());
+        //acting user is optional as it is only needed for sub check.
+        // will fall back to subscribing=false if not logged in
+        User actingUser = null;
+        if (principal != null) {
+            actingUser = userService.getUserOrNull(principal.getName());
+        }
 
         User targetUser = userService.getAnalystOrNull(username);
         if (targetUser == null) {
             return ResponseEntity.notFound().build();
         }
 
-        ProfileSubInfoDTO profile = userToProfileWithSubInfo(actingUser, targetUser);
+        ProfileSubInfoAboutMeDTO profile = userToProfileWithSubInfoAboutMe(actingUser, targetUser);
         return ResponseEntity.ok().body(profile);
     }
 
@@ -162,10 +168,10 @@ public class UserController {
      * @return The new "about me" text
      */
     @PutMapping("/update-about-me")
-    public ResponseEntity<?> updateAboutMe(Principal principal, @RequestBody String newAboutMe) {
+    public ResponseEntity<?> updateAboutMe(Principal principal, @RequestBody AboutMeUpdateDTO newAboutMe) {
         User actingUser = userService.getUserOrException(principal.getName());
 
-        actingUser.setAboutMe(newAboutMe);
+        actingUser.setAboutMe(newAboutMe.newAboutMe());
         userService.saveUser(actingUser);
 
         return ResponseEntity.ok().body(newAboutMe);
@@ -230,6 +236,17 @@ public class UserController {
         boolean isSubscribed = subscriptionController.subCheck(actingUser, targetUser);
 
         return new ProfileSubInfoDTO(targetUser.getId(), targetUser.getUsername(), isSubscribed);
+    }
+
+    public ProfileSubInfoAboutMeDTO userToProfileWithSubInfoAboutMe(@Nullable User actingUser, User targetUser) {
+        boolean loggedIn = (actingUser != null);
+        if (!loggedIn) {
+            return new ProfileSubInfoAboutMeDTO(targetUser.getId(), targetUser.getUsername(), false, targetUser.getAboutMe());
+        }
+
+        boolean isSubscribed = subscriptionController.subCheck(actingUser, targetUser);
+
+        return new ProfileSubInfoAboutMeDTO(targetUser.getId(), targetUser.getUsername(), isSubscribed, targetUser.getAboutMe());
     }
 
     public List<ProfileSubInfoDTO> usersToProfilesWithSubInfo(@Nullable User actingUser, List<User> targetUsers) {
