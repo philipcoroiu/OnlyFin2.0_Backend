@@ -9,7 +9,7 @@ import se.onlyfin.onlyfin2backend.DTO.incoming.AboutMeUpdateDTO;
 import se.onlyfin.onlyfin2backend.DTO.incoming.PasswordChangeDTO;
 import se.onlyfin.onlyfin2backend.DTO.incoming.UserDTO;
 import se.onlyfin.onlyfin2backend.DTO.outgoing.ProfileDTO;
-import se.onlyfin.onlyfin2backend.DTO.outgoing.ProfileSubInfoAboutMeDTO;
+import se.onlyfin.onlyfin2backend.DTO.outgoing.ProfileExtendedDTO;
 import se.onlyfin.onlyfin2backend.DTO.outgoing.ProfileSubInfoDTO;
 import se.onlyfin.onlyfin2backend.model.User;
 import se.onlyfin.onlyfin2backend.service.UserService;
@@ -112,7 +112,7 @@ public class UserController {
             return ResponseEntity.notFound().build();
         }
 
-        ProfileSubInfoAboutMeDTO profile = userToProfileWithSubInfoAboutMe(actingUser, targetUser);
+        ProfileExtendedDTO profile = userToProfileExtended(actingUser, targetUser);
         return ResponseEntity.ok().body(profile);
     }
 
@@ -238,15 +238,26 @@ public class UserController {
         return new ProfileSubInfoDTO(targetUser.getId(), targetUser.getUsername(), isSubscribed);
     }
 
-    public ProfileSubInfoAboutMeDTO userToProfileWithSubInfoAboutMe(@Nullable User actingUser, User targetUser) {
+    public ProfileExtendedDTO userToProfileExtended(@Nullable User actingUser, User targetUser) {
         boolean loggedIn = (actingUser != null);
         if (!loggedIn) {
-            return new ProfileSubInfoAboutMeDTO(targetUser.getId(), targetUser.getUsername(), false, targetUser.getAboutMe());
+            return new ProfileExtendedDTO(targetUser.getId(),
+                    targetUser.getUsername(),
+                    false,
+                    targetUser.getAboutMe(),
+                    false
+            );
         }
 
         boolean isSubscribed = subscriptionController.subCheck(actingUser, targetUser);
+        boolean isSelf = (actingUser == targetUser);
 
-        return new ProfileSubInfoAboutMeDTO(targetUser.getId(), targetUser.getUsername(), isSubscribed, targetUser.getAboutMe());
+        return new ProfileExtendedDTO(targetUser.getId(),
+                targetUser.getUsername(),
+                isSubscribed,
+                targetUser.getAboutMe(),
+                isSelf
+        );
     }
 
     public List<ProfileSubInfoDTO> usersToProfilesWithSubInfo(@Nullable User actingUser, List<User> targetUsers) {
