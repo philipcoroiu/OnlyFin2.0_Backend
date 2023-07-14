@@ -55,7 +55,8 @@ public class SecurityConfig {
                         "/stocks/search",
                         "/dash/fetch-user-stocks",
                         "/dash/fetch-categories-and-modules-under-user-stock",
-                        "/search/covers-stock"
+                        "/search/covers-stock",
+                        "/reviews/get"
                 )
                 .permitAll()
 
@@ -74,7 +75,9 @@ public class SecurityConfig {
                         "/subscriptions/add",
                         "/subscriptions/remove",
                         "/subscriptions/check",
-                        "/subscriptions/list"
+                        "/subscriptions/list",
+                        "/reviews/push",
+                        "/reviews/delete"
                 )
                 .hasRole("USER")
         );
