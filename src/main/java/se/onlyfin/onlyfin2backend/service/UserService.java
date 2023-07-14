@@ -115,8 +115,14 @@ public class UserService {
         if (userRepository.existsByUsernameIgnoreCase(user.username())) {
             return false;
         }
-
-        return true;
+        /*
+        Regex explanation:
+        Usernames can contain characters a-z, 0-9, underscores and periods.
+        The username cannot start with a period nor end with a period.
+        It must also not have more than one period sequentially.
+        Max length is 30 chars.
+         */
+        return user.username().matches("^(?!.*\\.\\.)(?!.*\\.$)\\w[\\w.]{0,29}");
     }
 
     /**
