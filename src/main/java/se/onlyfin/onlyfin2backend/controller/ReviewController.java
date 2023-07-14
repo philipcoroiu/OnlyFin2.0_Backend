@@ -1,6 +1,7 @@
 package se.onlyfin.onlyfin2backend.controller;
 
 import jakarta.transaction.Transactional;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -97,10 +98,10 @@ public class ReviewController {
         List<ReviewFetchDTO> reviews;
         if (loggedIn) {
             User actingUser = userService.getUserOrException(principal.getName());
-            reviews = reviewToReviewFetchDTO(actingUser, rawReviews);
+            reviews = reviewsToReviewFetchDTOs(actingUser, rawReviews);
             reviews.removeIf(ReviewFetchDTO::isAuthor);
         } else {
-            reviews = reviewToReviewFetchDTOUnauthenticated(rawReviews);
+            reviews = reviewsToReviewFetchDTOsUnauthenticated(rawReviews);
         }
 
         if (reviews.isEmpty()) {
@@ -111,6 +112,32 @@ public class ReviewController {
     }
 
     /**
+     * Fetches the logged-in user's review for the specified user if it exists.
+     *
+     * @param principal     The logged-in user
+     * @param targetUsername The username of the user to get reviews for
+     * @return 200 OK if successful, 400 Bad Request if the target user doesn't exist,
+     * 404 NOT FOUND if the target user has no review from the logged-in user
+     */
+    @GetMapping("/my-review")
+    public ResponseEntity<?> getMyReview(Principal principal, @RequestParam String targetUsername) {
+        User actingUser = userService.getUserOrException(principal.getName());
+
+        User targetUser = userService.getUserOrNull(targetUsername);
+        if (targetUser == null) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        Review review = reviewRepository.findByTargetAndAuthor(targetUser, actingUser);
+        if (review == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        ReviewFetchDTO reviewFetchDTO = reviewToReviewFetchDTO(actingUser, review);
+        return ResponseEntity.ok().body(reviewFetchDTO);
+    }
+
+    /**
      * Converts a list of reviews to a list of ReviewFetchDTOs.
      * If the logged-in user is the author of a review, the ReviewFetchDTO will have the "isAuthor" boolean set to true.
      *
@@ -118,7 +145,7 @@ public class ReviewController {
      * @param rawReviews The reviews to convert
      * @return A list of ReviewFetchDTOs
      */
-    public List<ReviewFetchDTO> reviewToReviewFetchDTO(User actingUser, List<Review> rawReviews) {
+    public List<ReviewFetchDTO> reviewsToReviewFetchDTOs(User actingUser, List<Review> rawReviews) {
         return rawReviews.stream()
                 .map(currentReview -> new ReviewFetchDTO(
                         currentReview.getId(),
@@ -130,6 +157,16 @@ public class ReviewController {
                 .collect(Collectors.toList());
     }
 
+    public ReviewFetchDTO reviewToReviewFetchDTO(User actingUser, Review rawReview) {
+        return new ReviewFetchDTO(
+                rawReview.getId(),
+                rawReview.getReviewText(),
+                new ProfileDTO(rawReview.getTarget().getId(), rawReview.getTarget().getUsername()),
+                new ProfileDTO(rawReview.getAuthor().getId(), rawReview.getAuthor().getUsername()),
+                actingUser == rawReview.getAuthor()
+        );
+    }
+
     /**
      * Converts a list of reviews to a list of ReviewFetchDTOs.
      * The "isAuthor" boolean will always be set to false.
@@ -137,7 +174,7 @@ public class ReviewController {
      * @param rawReviews The reviews to convert
      * @return A list of ReviewFetchDTOs
      */
-    public List<ReviewFetchDTO> reviewToReviewFetchDTOUnauthenticated(List<Review> rawReviews) {
+    public List<ReviewFetchDTO> reviewsToReviewFetchDTOsUnauthenticated(List<Review> rawReviews) {
         return rawReviews.stream()
                 .map(currentReview -> new ReviewFetchDTO(
                         currentReview.getId(),

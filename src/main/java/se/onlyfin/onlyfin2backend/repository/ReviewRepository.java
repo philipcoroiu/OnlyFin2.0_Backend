@@ -12,4 +12,6 @@ public interface ReviewRepository extends JpaRepository<Review, Integer> {
     void deleteAllByAuthorAndTarget(User author, User target);
 
     List<Review> findAllByTarget(User target);
+
+    Review findByTargetAndAuthor(User targetUser, User actingUser);
 }

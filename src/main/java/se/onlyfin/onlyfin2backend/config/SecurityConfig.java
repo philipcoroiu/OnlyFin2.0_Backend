@@ -77,7 +77,8 @@ public class SecurityConfig {
                         "/subscriptions/check",
                         "/subscriptions/list",
                         "/reviews/push",
-                        "/reviews/delete"
+                        "/reviews/delete",
+                        "/reviews/my-review"
                 )
                 .hasRole("USER")
         );
