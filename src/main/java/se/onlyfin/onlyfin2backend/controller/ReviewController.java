@@ -93,16 +93,18 @@ public class ReviewController {
         }
 
         List<Review> rawReviews = reviewRepository.findAllByTarget(targetUser);
-        if (rawReviews.isEmpty()) {
-            return ResponseEntity.noContent().build();
-        }
 
         List<ReviewFetchDTO> reviews;
         if (loggedIn) {
             User actingUser = userService.getUserOrException(principal.getName());
             reviews = reviewToReviewFetchDTO(actingUser, rawReviews);
+            reviews.removeIf(ReviewFetchDTO::isAuthor);
         } else {
             reviews = reviewToReviewFetchDTOUnauthenticated(rawReviews);
+        }
+
+        if (reviews.isEmpty()) {
+            return ResponseEntity.noContent().build();
         }
 
         return ResponseEntity.ok().body(reviews);
