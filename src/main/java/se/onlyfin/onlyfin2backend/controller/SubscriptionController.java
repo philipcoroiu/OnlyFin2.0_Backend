@@ -1,5 +1,6 @@
 package se.onlyfin.onlyfin2backend.controller;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -43,6 +44,10 @@ public class SubscriptionController {
         User targetUser = userService.getUserOrNull(targetUsername);
         if (targetUser == null) {
             return ResponseEntity.notFound().build();
+        }
+
+        if (actingUser == targetUser) {
+            return ResponseEntity.status(HttpStatus.I_AM_A_TEAPOT).build();
         }
 
         SubscriptionId subscriptionId = new SubscriptionId();
