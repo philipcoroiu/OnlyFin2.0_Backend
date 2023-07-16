@@ -321,7 +321,7 @@ public class DashboardController {
                         currentModule.getContent()));
             }
 
-            categoryTabs.add(new UserCategoryTabDTO(currentUserCategoryId, categoryModules));
+            categoryTabs.add(new UserCategoryTabDTO(currentUserCategoryId, currentUserCategory.getName(), categoryModules));
         }
 
         UserStockTabDTO userStockTabDTO = new UserStockTabDTO(userStockId, categoryTabs);
