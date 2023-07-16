@@ -1,5 +1,6 @@
 package se.onlyfin.onlyfin2backend.model;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import jakarta.persistence.*;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
@@ -18,7 +19,7 @@ public class DashboardModule {
 
     @Column(columnDefinition = "json")
     @JdbcTypeCode(SqlTypes.JSON)
-    private String content;
+    private JsonNode content;
 
     @Column
     private String moduleType;
@@ -57,11 +58,11 @@ public class DashboardModule {
         this.userCategory = userCategory;
     }
 
-    public String getContent() {
+    public JsonNode getContent() {
         return content;
     }
 
-    public void setContent(String content) {
+    public void setContent(JsonNode content) {
         this.content = content;
     }
 

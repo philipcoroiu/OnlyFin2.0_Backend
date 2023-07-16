@@ -203,7 +203,7 @@ public class DashboardController {
         dashboardModule.setX(modulePostDTO.xAxis());
         dashboardModule.setY(modulePostDTO.yAxis());
         dashboardModule.setModuleType(modulePostDTO.type());
-        dashboardModule.setContent(modulePostDTO.content().asText());
+        dashboardModule.setContent(modulePostDTO.content());
 
         dashboardModuleRepository.save(dashboardModule);
 
@@ -236,7 +236,7 @@ public class DashboardController {
         targetModule.setX(moduleUpdateDTO.xAxis());
         targetModule.setY(moduleUpdateDTO.yAxis());
         targetModule.setModuleType(moduleUpdateDTO.type());
-        targetModule.setContent(moduleUpdateDTO.content().asText());
+        targetModule.setContent(moduleUpdateDTO.content());
         dashboardModuleRepository.save(targetModule);
 
         return ResponseEntity.ok().build();
