@@ -106,7 +106,7 @@ public class UserService {
      * Checks if a userDTO is registrable
      *
      * @param user The user details DTO to be checked.
-     * @return True if the user is registrable else false.
+     * @return A registration response indicating if the user is registrable or not.
      */
     public RegistrationResponse registrable(UserDTO user) {
         if (user == null) {
