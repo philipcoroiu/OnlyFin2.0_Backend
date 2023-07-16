@@ -89,7 +89,7 @@ public class UserService {
         User userToRegister = new User();
         userToRegister.setEnabled(true);
 
-        userToRegister.setEmail(userDTO.email());
+        userToRegister.setEmail(userDTO.email().toLowerCase());
         userToRegister.setUsername(userDTO.username().replaceAll("\\s", "").toLowerCase());
         userToRegister.setPassword(passwordEncoder.encode(userDTO.password()));
 
@@ -109,7 +109,7 @@ public class UserService {
         if (user == null) {
             return false;
         }
-        if (userRepository.existsByEmail(user.email())) {
+        if (userRepository.existsByEmailContainingIgnoreCase(user.email())) {
             return false;
         }
         if (userRepository.existsByUsernameIgnoreCase(user.username())) {
