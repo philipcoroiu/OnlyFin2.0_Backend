@@ -109,7 +109,7 @@ public class UserService {
         if (user == null) {
             return false;
         }
-        if (userRepository.existsByEmailContainingIgnoreCase(user.email())) {
+        if (userRepository.existsByEmailIgnoreCase(user.email())) {
             return false;
         }
         if (userRepository.existsByUsernameIgnoreCase(user.username())) {
