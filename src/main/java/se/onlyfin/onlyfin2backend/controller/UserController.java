@@ -11,6 +11,7 @@ import se.onlyfin.onlyfin2backend.DTO.incoming.UserDTO;
 import se.onlyfin.onlyfin2backend.DTO.outgoing.ProfileDTO;
 import se.onlyfin.onlyfin2backend.DTO.outgoing.ProfileExtendedDTO;
 import se.onlyfin.onlyfin2backend.DTO.outgoing.ProfileSubInfoDTO;
+import se.onlyfin.onlyfin2backend.model.RegistrationResponse;
 import se.onlyfin.onlyfin2backend.model.User;
 import se.onlyfin.onlyfin2backend.service.UserService;
 
@@ -55,16 +56,18 @@ public class UserController {
      * Registers a new user. If the username or email is already registered, a bad request is returned.
      *
      * @param userDTO UserDTO containing username, password and email.
-     * @return HTTP 200 OK and username if registration was successful. HTTP 400 BAD REQUEST if registration failed.
+     * @return HTTP 200 OK if registration was successful. HTTP 400 BAD REQUEST with an error message if registration failed.
      */
     @PostMapping("/register")
     public ResponseEntity<String> registerNewUser(@RequestBody UserDTO userDTO) {
-        User registeredUser = userService.registerUser(userDTO).orElse(null);
-        if (registeredUser == null) {
-            return ResponseEntity.badRequest().body("Registration failed");
-        }
+        RegistrationResponse registrationResponse = userService.registerUser(userDTO);
 
-        return ResponseEntity.ok(registeredUser.getUsername());
+        return switch (registrationResponse) {
+            case OK -> ResponseEntity.ok().body("Successfully registered user!");
+            case USERNAME_TAKEN -> ResponseEntity.badRequest().body("Username is already taken!");
+            case EMAIL_TAKEN -> ResponseEntity.badRequest().body("Email is already taken!");
+            default -> ResponseEntity.badRequest().body("Something went wrong!");
+        };
     }
 
     /**
@@ -178,7 +181,7 @@ public class UserController {
     }
 
     /**
-     * @param principal The logged-in user
+     * @param principal         The logged-in user
      * @param passwordChangeDTO Old password confirmation and the new password
      * @return HTTP 200 OK if the password was changed successfully. HTTP 400 BAD REQUEST if the password change failed.
      */

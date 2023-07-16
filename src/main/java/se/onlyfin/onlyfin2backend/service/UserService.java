@@ -7,6 +7,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import se.onlyfin.onlyfin2backend.DTO.incoming.UserDTO;
 import se.onlyfin.onlyfin2backend.DTO.outgoing.ProfileDTO;
+import se.onlyfin.onlyfin2backend.model.RegistrationResponse;
 import se.onlyfin.onlyfin2backend.model.User;
 import se.onlyfin.onlyfin2backend.repository.UserRepository;
 
@@ -81,9 +82,10 @@ public class UserService {
      * @return The registered user if registration was successful else null.
      */
     @Transactional
-    public Optional<User> registerUser(UserDTO userDTO) {
-        if (!registrable(userDTO)) {
-            return Optional.empty();
+    public RegistrationResponse registerUser(UserDTO userDTO) {
+        RegistrationResponse registrationResponse = registrable(userDTO);
+        if (!registrationResponse.equals(RegistrationResponse.OK)) {
+            return registrationResponse;
         }
 
         User userToRegister = new User();
@@ -96,7 +98,8 @@ public class UserService {
         userToRegister.setRoles("ROLE_USER");
         userToRegister.setAnalyst(true);
 
-        return Optional.of(userRepository.save(userToRegister));
+        userRepository.save(userToRegister);
+        return registrationResponse;
     }
 
     /**
@@ -105,15 +108,15 @@ public class UserService {
      * @param user The user details DTO to be checked.
      * @return True if the user is registrable else false.
      */
-    public boolean registrable(UserDTO user) {
+    public RegistrationResponse registrable(UserDTO user) {
         if (user == null) {
-            return false;
-        }
-        if (userRepository.existsByEmailIgnoreCase(user.email())) {
-            return false;
+            return RegistrationResponse.INVALID;
         }
         if (userRepository.existsByUsernameIgnoreCase(user.username())) {
-            return false;
+            return RegistrationResponse.USERNAME_TAKEN;
+        }
+        if (userRepository.existsByEmailIgnoreCase(user.email())) {
+            return RegistrationResponse.EMAIL_TAKEN;
         }
         /*
         Regex explanation:
@@ -122,7 +125,11 @@ public class UserService {
         It must also not have more than one period sequentially.
         Max length is 30 chars.
          */
-        return user.username().matches("^(?!.*\\.\\.)(?!.*\\.$)\\w[\\w.]{0,29}");
+        boolean validFormat = user.username().matches("^(?!.*\\.\\.)(?!.*\\.$)\\w[\\w.]{0,29}");
+        if (!validFormat) {
+            return RegistrationResponse.INVALID;
+        }
+        return RegistrationResponse.OK;
     }
 
     /**
