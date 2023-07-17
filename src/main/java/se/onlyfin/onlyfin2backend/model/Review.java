@@ -12,7 +12,7 @@ public class Review {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column
+    @Column(columnDefinition = "TEXT")
     private String reviewText;
 
     @ManyToOne
