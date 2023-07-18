@@ -7,6 +7,8 @@ import java.util.Objects;
 
 /**
  * This class represents the user table in the database.
+ * A user contains user details such as username, email, password and the "about me" text.
+ * It also contains the attribute isAnalyst which is used to mark whether the user should be public on the platform.
  */
 @Entity
 @Table(name = "users")
@@ -37,7 +39,7 @@ public class User {
     private boolean isAnalyst;
 
     @Column(name = "about_me")
-    private String aboutMe = "Lorem ipsum";
+    private String aboutMe = "Default about me text";
 
     public Integer getId() {
         return id;

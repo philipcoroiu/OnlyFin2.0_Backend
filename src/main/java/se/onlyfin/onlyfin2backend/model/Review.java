@@ -4,6 +4,9 @@ import jakarta.persistence.*;
 
 /**
  * This class represents the review table in the database.
+ * A review contains the review contents in the form of a string.
+ * It also contains information about the author and the target user.
+ * There is a constraint on the table that only allows one user to have 1 review per target user at a time.
  */
 @Entity
 @Table

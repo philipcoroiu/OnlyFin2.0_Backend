@@ -6,6 +6,9 @@ import jakarta.persistence.Table;
 
 /**
  * This class represents the subscription table in the database.
+ * A subscription is made using the subscribing user & target user as the key.
+ * As the subscription table uses composite keys, it is required by JPA
+ * to create a separate class which models the composite key: {@link SubscriptionId}
  */
 @Entity
 @Table

@@ -7,6 +7,15 @@ import org.hibernate.type.SqlTypes;
 
 import java.time.Instant;
 
+/**
+ * This class represents the dashboard_module table in the database.
+ * A dashboard module contains content in the form of a JSON object.
+ * It also contains other metadata required, such as post-date, update-date, and size for the dashboard grid.
+ * It also contains a link back to the user category that contains it.
+ *
+ * <br/>
+ * (See also: {@link UserCategory})
+ */
 @Entity
 @Table
 public class DashboardModule {

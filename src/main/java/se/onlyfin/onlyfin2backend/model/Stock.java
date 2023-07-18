@@ -2,6 +2,10 @@ package se.onlyfin.onlyfin2backend.model;
 
 import jakarta.persistence.*;
 
+/**
+ * This class represents the stock table in the database.
+ * A stock is a name & ticker - for example, "Apple Inc." and "AAPL"
+ */
 @Entity
 @Table
 public class Stock {

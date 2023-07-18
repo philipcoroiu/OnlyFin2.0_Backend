@@ -7,6 +7,10 @@ import jakarta.persistence.ManyToOne;
 import java.io.Serializable;
 import java.util.Objects;
 
+/**
+ * This class is the model of the composite key used in the subscription table.
+ * It contains a subscriber and a subscribed-to user which together form the composite key.
+ */
 @Embeddable
 public class SubscriptionId implements Serializable {
     @ManyToOne

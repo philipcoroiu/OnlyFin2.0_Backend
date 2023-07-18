@@ -1,7 +1,6 @@
 package se.onlyfin.onlyfin2backend.controller;
 
 import jakarta.transaction.Transactional;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -114,7 +113,7 @@ public class ReviewController {
     /**
      * Fetches the logged-in user's review for the specified user if it exists.
      *
-     * @param principal     The logged-in user
+     * @param principal      The logged-in user
      * @param targetUsername The username of the user to get reviews for
      * @return 200 OK if successful, 400 Bad Request if the target user doesn't exist,
      * 404 NOT FOUND if the target user has no review from the logged-in user

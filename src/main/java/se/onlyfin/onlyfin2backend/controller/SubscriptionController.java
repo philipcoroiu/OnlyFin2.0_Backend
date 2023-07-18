@@ -87,7 +87,7 @@ public class SubscriptionController {
     }
 
     /**
-     * @param principal     The logged-in user.
+     * @param principal      The logged-in user.
      * @param targetUsername The username of the user to check if the logged-in user is subscribed to.
      * @return If the logged-in user is subscribed to the user with the given username.
      * 404 Not Found if the target user does not exist.
