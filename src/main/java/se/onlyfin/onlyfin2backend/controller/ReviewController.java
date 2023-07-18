@@ -46,7 +46,7 @@ public class ReviewController {
             return ResponseEntity.badRequest().build();
         }
 
-        reviewRepository.deleteAllByAuthor(actingUser);
+        reviewRepository.deleteAllByAuthorAndTarget(actingUser, targetUser);
 
         Review review = new Review();
         review.setAuthor(actingUser);
