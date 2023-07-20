@@ -41,6 +41,9 @@ public class User {
     @Column(name = "about_me")
     private String aboutMe = "Default about me text";
 
+    @Column(name = "profile_picture", nullable = false)
+    private Integer profilePicture = 0;
+
     public Integer getId() {
         return id;
     }
@@ -106,6 +109,14 @@ public class User {
 
     public void setAboutMe(String aboutMe) {
         this.aboutMe = aboutMe;
+    }
+
+    public Integer getProfilePicture() {
+        return profilePicture;
+    }
+
+    public void setProfilePicture(Integer profilePicture) {
+        this.profilePicture = profilePicture;
     }
 
     @Override
