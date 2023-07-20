@@ -33,7 +33,7 @@ public class ReviewController {
      *
      * @param principal     The logged-in user
      * @param reviewPostDTO The review to push
-     * @return 200 OK if successful, 400 Bad Request if the target user doesn't exist
+     * @return 200 OK if successful, 400 Bad Request if the target user doesn't exist or if the review text is > 5000 chars
      */
     @PutMapping("/push")
     @Transactional
@@ -42,6 +42,10 @@ public class ReviewController {
 
         User targetUser = userService.getUserOrNull(reviewPostDTO.targetUsername());
         if (targetUser == null) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        if (reviewPostDTO.reviewText().length() > 5000) {
             return ResponseEntity.badRequest().build();
         }
 
