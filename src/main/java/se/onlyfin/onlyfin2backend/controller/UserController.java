@@ -7,6 +7,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import se.onlyfin.onlyfin2backend.DTO.incoming.AboutMeUpdateDTO;
 import se.onlyfin.onlyfin2backend.DTO.incoming.PasswordChangeDTO;
+import se.onlyfin.onlyfin2backend.DTO.incoming.ProfilePictureUpdateDTO;
 import se.onlyfin.onlyfin2backend.DTO.incoming.UserDTO;
 import se.onlyfin.onlyfin2backend.DTO.outgoing.ProfileDTO;
 import se.onlyfin.onlyfin2backend.DTO.outgoing.ProfileExtendedDTO;
@@ -195,6 +196,46 @@ public class UserController {
         }
 
         return ResponseEntity.ok().body("Updated password successfully");
+    }
+
+    /**
+     * Fetches the profile picture id of a target user
+     *
+     * @param targetUsername The username of the target user
+     * @return HTTP 200 OK with profile picture id if successful.
+     * HTTP 404 NOT FOUND if the target user couldn't be found.
+     */
+    @GetMapping("/profile-picture")
+    public ResponseEntity<?> getProfilePicture(@RequestParam String targetUsername) {
+        User targetUser = userService.getUserOrNull(targetUsername);
+        if (targetUser == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        Integer profilePictureId = targetUser.getProfilePictureId();
+
+        return ResponseEntity.ok().body(profilePictureId);
+    }
+
+    /**
+     * Updates the profile picture id of the logged-in user
+     *
+     * @param principal the logged-in user
+     * @param profilePictureUpdateDTO the new profile picture id
+     * @return HTTP 200 OK if successful. HTTP 400 BAD REQUEST if new profile picture id is invalid
+     */
+    @PutMapping("/update-profile-picture")
+    public ResponseEntity<?> updateProfilePicture(Principal principal, @RequestBody ProfilePictureUpdateDTO profilePictureUpdateDTO) {
+        User actingUser = userService.getUserOrException(principal.getName());
+
+        if (profilePictureUpdateDTO.profilePictureId() == null) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        actingUser.setProfilePictureId(profilePictureUpdateDTO.profilePictureId());
+        userService.saveUser(actingUser);
+
+        return ResponseEntity.ok().build();
     }
 
     /*

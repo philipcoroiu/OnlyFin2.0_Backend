@@ -13,10 +13,8 @@ import se.onlyfin.onlyfin2backend.repository.UserRepository;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 /**
- * TODO: MAKE LESS SHIT
  * This class is responsible for handling user management operations.
  */
 @Service
