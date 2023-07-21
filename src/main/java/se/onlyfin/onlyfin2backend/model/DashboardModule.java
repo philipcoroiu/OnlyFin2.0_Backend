@@ -33,10 +33,10 @@ public class DashboardModule {
     @Column
     private String moduleType;
 
-    @Column
+    @Column(insertable = false)
     private Instant postDate;
 
-    @Column
+    @Column(insertable = false)
     private Instant updateDate;
 
     @Column
