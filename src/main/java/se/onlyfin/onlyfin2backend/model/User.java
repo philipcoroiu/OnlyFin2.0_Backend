@@ -1,6 +1,7 @@
 package se.onlyfin.onlyfin2backend.model;
 
 import jakarta.persistence.*;
+import org.hibernate.type.SqlTypes;
 import org.springframework.lang.NonNull;
 
 import java.util.Objects;
@@ -38,7 +39,7 @@ public class User {
     @Column(name = "is_analyst")
     private boolean isAnalyst;
 
-    @Column(name = "about_me")
+    @Column(name = "about_me", nullable = false)
     private String aboutMe = "Default about me text";
 
     @Column(name = "profile_picture_id", nullable = false)
