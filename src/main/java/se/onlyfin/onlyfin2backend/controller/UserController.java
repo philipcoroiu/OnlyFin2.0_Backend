@@ -169,11 +169,16 @@ public class UserController {
      *
      * @param principal  The logged-in user
      * @param newAboutMe The new "about me" text
-     * @return The new "about me" text
+     * @return HTTP 200 OK & the new "about me" text if successful.
+     * HTTP 400 BAD REQUEST if review length is > 2500 characters.
      */
     @PutMapping("/update-about-me")
     public ResponseEntity<?> updateAboutMe(Principal principal, @RequestBody AboutMeUpdateDTO newAboutMe) {
         User actingUser = userService.getUserOrException(principal.getName());
+
+        if (newAboutMe.newAboutMe().length() > 2500) {
+            return ResponseEntity.badRequest().build();
+        }
 
         actingUser.setAboutMe(newAboutMe.newAboutMe());
         userService.saveUser(actingUser);
