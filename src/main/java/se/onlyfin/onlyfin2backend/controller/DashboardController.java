@@ -275,7 +275,7 @@ public class DashboardController {
      * @return 200 OK if successful, 404 Not Found if the user doesn't exist
      */
     @GetMapping("/fetch-user-stocks")
-    public ResponseEntity<?> fetchStocks(@RequestParam String targetUsername) {
+    public ResponseEntity<?> fetchUserStocks(@RequestParam String targetUsername) {
         User targetUser = userService.getUserOrNull(targetUsername);
         if (targetUser == null) {
             return ResponseEntity.notFound().build();
