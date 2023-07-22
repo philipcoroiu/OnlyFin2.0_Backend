@@ -22,6 +22,7 @@ import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * This class is responsible for handling requests related to the dashboard.
@@ -296,7 +297,6 @@ public class DashboardController {
      * @param userStockId The id of the user stock to fetch categories and modules from
      * @return 200 OK if successful, 404 Not Found if the user stock doesn't exist
      */
-    //TODO: Make this less shit
     @GetMapping("/fetch-categories-and-modules-under-user-stock")
     public ResponseEntity<UserStockTabDTO> fetchCategoriesAndModulesUnderUserStock(@RequestParam Integer userStockId) {
         UserStock userStock = userStockRepository.findById(userStockId).orElse(null);
@@ -304,29 +304,31 @@ public class DashboardController {
             return ResponseEntity.notFound().build();
         }
 
-        List<UserCategory> userCategories = userCategoryRepository.findByUserStockId(userStockId);
         List<UserCategoryTabDTO> categoryTabs = new ArrayList<>();
-        for (UserCategory currentUserCategory : userCategories) {
-            Integer currentUserCategoryId = currentUserCategory.getId();
-            List<DashboardModule> fetchedModules = dashboardModuleRepository.findByUserCategoryId(currentUserCategoryId);
-            List<ModuleDTO> categoryModules = new ArrayList<>();
-            for (DashboardModule currentModule : fetchedModules) {
-                categoryModules.add(new ModuleDTO(
-                        currentUserCategoryId,
-                        currentModule.getHeight(),
-                        currentModule.getWidth(),
-                        currentModule.getX(),
-                        currentModule.getY(),
-                        currentModule.getModuleType(),
-                        currentModule.getContent()));
-            }
 
-            categoryTabs.add(new UserCategoryTabDTO(currentUserCategoryId, currentUserCategory.getName(), categoryModules));
+        List<UserCategory> userCategories = userCategoryRepository.findByUserStockIdIncludeModules(userStockId);
+        for (UserCategory userCategory : userCategories) {
+            int categoryId = userCategory.getId();
+
+            List<ModuleDTO> categoryModules = userCategory.getModules()
+                    .stream()
+                    .map(module -> new ModuleDTO(
+                            categoryId,
+                            module.getHeight(),
+                            module.getWidth(),
+                            module.getX(),
+                            module.getY(),
+                            module.getModuleType(),
+                            module.getContent())
+                    )
+                    .collect(Collectors.toList());
+
+            categoryTabs.add(new UserCategoryTabDTO(categoryId, userCategory.getName(), categoryModules));
         }
 
-        UserStockTabDTO userStockTabDTO = new UserStockTabDTO(userStockId, categoryTabs);
+        UserStockTabDTO stockTab = new UserStockTabDTO(userStockId, categoryTabs);
 
-        return ResponseEntity.ok().body(userStockTabDTO);
+        return ResponseEntity.ok().body(stockTab);
     }
 
 }

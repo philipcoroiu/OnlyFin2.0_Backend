@@ -2,6 +2,8 @@ package se.onlyfin.onlyfin2backend.model;
 
 import jakarta.persistence.*;
 
+import java.util.List;
+
 /**
  * This class represents the user_category table in the database.
  * A user category models users' dashboard category tabs.
@@ -22,6 +24,11 @@ public class UserCategory {
 
     @ManyToOne
     private UserStock userStock;
+
+    //"modules" contain all DashboardModules that have a foreign key pointing to this UserCategory.
+    // it is only fetched when requested as fetch-type is set to lazy (reduces load time if modules aren't needed)
+    @OneToMany(mappedBy = "userCategory", fetch = FetchType.LAZY)
+    private List<DashboardModule> modules;
 
     public Integer getId() {
         return id;
@@ -45,5 +52,13 @@ public class UserCategory {
 
     public void setUserStock(UserStock userStock) {
         this.userStock = userStock;
+    }
+
+    public List<DashboardModule> getModules() {
+        return modules;
+    }
+
+    public void setModules(List<DashboardModule> modules) {
+        this.modules = modules;
     }
 }
