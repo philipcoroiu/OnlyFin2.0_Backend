@@ -14,6 +14,7 @@ public interface UserCategoryRepository extends JpaRepository<UserCategory, Inte
     @Query("""
             FROM UserCategory category
             WHERE category.userStock.id = :userStockId
+            ORDER BY category.name
             """)
     List<UserCategory> findByUserStockIdHydrateModules(Integer userStockId);
 }

@@ -16,6 +16,7 @@ public interface UserStockRepository extends CrudRepository<UserStock, Integer> 
     @Query("""
             FROM UserStock userStock
             WHERE userStock.user.id = :userId
+            ORDER BY userStock.stock.name
             """)
     List<UserStock> findByUserIdHydrateStocks(Integer userId);
 
@@ -23,6 +24,7 @@ public interface UserStockRepository extends CrudRepository<UserStock, Integer> 
     @Query("""
             FROM UserStock userStock
             WHERE userStock.user.id = :userId
+            ORDER BY userStock.stock.name
             """)
     List<UserStock> findByUserIdHydrateStocksAndCategories(Integer userId);
 
@@ -30,6 +32,7 @@ public interface UserStockRepository extends CrudRepository<UserStock, Integer> 
             SELECT DISTINCT userStock.user
             FROM UserStock userStock
             WHERE userStock.stock.id = :stockId
+            ORDER BY userStock.stock.name
             """)
     Set<User> findUsersByStockId(Integer stockId);
 }
