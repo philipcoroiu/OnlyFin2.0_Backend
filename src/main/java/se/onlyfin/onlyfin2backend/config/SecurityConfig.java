@@ -48,7 +48,7 @@ public class SecurityConfig {
 
                         "/users/whoami",
                         "/users/register",
-                        "/users/search/all",
+                        "/users/search/newest",
                         "/users/search/username",
                         "/users/username",
                         "/users/about-me",

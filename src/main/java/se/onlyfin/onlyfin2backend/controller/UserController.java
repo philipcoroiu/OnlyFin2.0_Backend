@@ -77,8 +77,8 @@ public class UserController {
      * @param principal The logged-in user
      * @return All analysts in the database except the logged-in user. If no analysts are found, a 204 NO CONTENT is returned.
      */
-    @GetMapping("/search/all")
-    public ResponseEntity<?> findAll(Principal principal) {
+    @GetMapping("/search/newest")
+    public ResponseEntity<?> findNewest(Principal principal) {
         boolean loggedIn = (principal != null);
         User loggedInUser = null;
 
