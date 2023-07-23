@@ -200,8 +200,8 @@ public class UserService {
         return userRepository.save(targetUser);
     }
 
-    public List<User> getAllAnalysts() {
-        return userRepository.findAllByisAnalystIsTrue();
+    public List<User> get20NewestAnalysts() {
+        return userRepository.findTop20ByisAnalystIsTrueOrderByIdDesc();
     }
 
     public List<User> findAnalystsByName(String searchQuery) {

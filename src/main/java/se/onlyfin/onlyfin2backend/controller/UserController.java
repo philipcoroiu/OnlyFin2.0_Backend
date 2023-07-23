@@ -72,7 +72,7 @@ public class UserController {
     }
 
     /**
-     * Returns all analysts in the database except the logged-in user. Includes subscription information.
+     * Returns the 20 newest analysts in the database except the logged-in user. Includes subscription information.
      *
      * @param principal The logged-in user
      * @return All analysts in the database except the logged-in user. If no analysts are found, a 204 NO CONTENT is returned.
@@ -82,7 +82,7 @@ public class UserController {
         boolean loggedIn = (principal != null);
         User loggedInUser = null;
 
-        List<User> analysts = userService.getAllAnalysts();
+        List<User> analysts = userService.get20NewestAnalysts();
         if (loggedIn) {
             loggedInUser = userService.getUserOrException(principal.getName());
             analysts.remove(loggedInUser);

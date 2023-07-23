@@ -19,7 +19,7 @@ public interface UserRepository extends CrudRepository<User, Integer> {
 
     boolean existsByUsernameIgnoreCase(String username);
 
-    List<User> findAllByisAnalystIsTrue();
+    List<User> findTop20ByisAnalystIsTrueOrderByIdDesc();
 
     List<User> findAllByisAnalystIsTrueAndUsernameContainsIgnoreCase(String searchQuery);
 
