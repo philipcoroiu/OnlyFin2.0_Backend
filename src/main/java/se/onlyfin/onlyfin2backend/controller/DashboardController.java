@@ -7,10 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import se.onlyfin.onlyfin2backend.DTO.incoming.CategoryCreationDTO;
 import se.onlyfin.onlyfin2backend.DTO.incoming.CategoryUpdateDTO;
 import se.onlyfin.onlyfin2backend.DTO.incoming.ModulePostDTO;
-import se.onlyfin.onlyfin2backend.DTO.outgoing.ModuleDTO;
-import se.onlyfin.onlyfin2backend.DTO.outgoing.UserCategoryTabDTO;
-import se.onlyfin.onlyfin2backend.DTO.outgoing.UserStockDTO;
-import se.onlyfin.onlyfin2backend.DTO.outgoing.UserStockTabDTO;
+import se.onlyfin.onlyfin2backend.DTO.outgoing.*;
 import se.onlyfin.onlyfin2backend.model.*;
 import se.onlyfin.onlyfin2backend.repository.DashboardModuleRepository;
 import se.onlyfin.onlyfin2backend.repository.StockRepository;
@@ -313,6 +310,7 @@ public class DashboardController {
             List<ModuleDTO> categoryModules = userCategory.getModules()
                     .stream()
                     .map(module -> new ModuleDTO(
+                            module.getId(),
                             categoryId,
                             module.getHeight(),
                             module.getWidth(),
