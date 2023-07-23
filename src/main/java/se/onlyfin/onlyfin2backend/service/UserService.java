@@ -205,7 +205,7 @@ public class UserService {
     }
 
     public List<User> findAnalystsByName(String searchQuery) {
-        return userRepository.findAllByisAnalystIsTrueAndUsernameContainsIgnoreCase(searchQuery);
+        return userRepository.findTop20ByisAnalystIsTrueAndUsernameContainsIgnoreCase(searchQuery);
     }
 
     public List<ProfileDTO> usersToProfiles(List<User> users) {

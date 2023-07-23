@@ -21,7 +21,7 @@ public interface UserRepository extends CrudRepository<User, Integer> {
 
     List<User> findTop20ByisAnalystIsTrueOrderByIdDesc();
 
-    List<User> findAllByisAnalystIsTrueAndUsernameContainsIgnoreCase(String searchQuery);
+    List<User> findTop20ByisAnalystIsTrueAndUsernameContainsIgnoreCase(String searchQuery);
 
     Optional<User> findByisAnalystIsTrueAndUsernameEquals(String analystUsername);
 }
