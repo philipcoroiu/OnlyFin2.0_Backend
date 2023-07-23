@@ -1,5 +1,6 @@
 package se.onlyfin.onlyfin2backend.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 import java.util.List;
@@ -28,6 +29,7 @@ public class UserCategory {
     //"modules" contain all DashboardModules that have a foreign key pointing to this UserCategory.
     // it is only fetched when requested as fetch-type is set to lazy (reduces load time if modules aren't needed)
     @OneToMany(mappedBy = "userCategory", fetch = FetchType.LAZY)
+    @JsonIgnore
     private List<DashboardModule> modules;
 
     public Integer getId() {

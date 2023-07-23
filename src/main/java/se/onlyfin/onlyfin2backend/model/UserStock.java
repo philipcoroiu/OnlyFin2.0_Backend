@@ -1,6 +1,9 @@
 package se.onlyfin.onlyfin2backend.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+
+import java.util.List;
 
 /**
  * This class represents the user_stock table in the database.
@@ -22,6 +25,12 @@ public class UserStock {
 
     @ManyToOne
     private User user;
+
+    //"categories" contain all UserCategories that have a foreign key pointing to this UserStock.
+    // it is only fetched when requested as fetch-type is set to lazy (reduces load time if categories aren't needed)
+    @OneToMany(mappedBy = "userStock", fetch = FetchType.LAZY)
+    @JsonIgnore
+    private List<UserCategory> categories;
 
     public Integer getId() {
         return id;
@@ -45,5 +54,13 @@ public class UserStock {
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+    public List<UserCategory> getCategories() {
+        return categories;
+    }
+
+    public void setCategories(List<UserCategory> categories) {
+        this.categories = categories;
     }
 }

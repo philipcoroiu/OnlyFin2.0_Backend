@@ -278,7 +278,7 @@ public class DashboardController {
             return ResponseEntity.notFound().build();
         }
 
-        List<UserStock> userStocks = userStockRepository.findByUserId(targetUser.getId());
+        List<UserStock> userStocks = userStockRepository.findByUserIdHydrateStocks(targetUser.getId());
 
         List<UserStockDTO> userStockDTOS = new ArrayList<>();
         for (UserStock userStock : userStocks) {
@@ -327,6 +327,31 @@ public class DashboardController {
         UserStockTabDTO stockTab = new UserStockTabDTO(userStockId, categoryTabs);
 
         return ResponseEntity.ok().body(stockTab);
+    }
+
+    @GetMapping("/metadata")
+    public ResponseEntity<DashboardDTO> fetchCategoriesUnderUserStock(Principal principal) {
+        User actingUser = userService.getUserOrException(principal.getName());
+        Integer userId = actingUser.getId();
+
+        List<UserStockTabDTO> stockTabs = userStockRepository.findByUserIdHydrateStocksAndCategories(userId)
+                .stream()
+                .map(userStock -> new UserStockTabDTO(
+                        userStock.getId(),
+                        userStock.getCategories()
+                                .stream()
+                                .map(userCategory -> new UserCategoryTabDTO(
+                                        userCategory.getId(),
+                                        userCategory.getName(),
+                                        null)
+                                )
+                                .toList()
+                ))
+                .toList();
+
+        DashboardDTO dashboard = new DashboardDTO(stockTabs);
+
+        return ResponseEntity.ok().body(dashboard);
     }
 
 }
