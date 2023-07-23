@@ -19,7 +19,6 @@ import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 /**
  * This class is responsible for handling requests related to the dashboard.
@@ -301,28 +300,28 @@ public class DashboardController {
             return ResponseEntity.notFound().build();
         }
 
-        List<UserCategoryTabDTO> categoryTabs = new ArrayList<>();
+        List<UserCategoryTabDTO> categoryTabs = userCategoryRepository.findByUserStockIdHydrateModules(userStockId)
+                .stream()
+                .map(userCategory -> {
+                    Integer userCategoryId = userCategory.getId();
 
-        List<UserCategory> userCategories = userCategoryRepository.findByUserStockIdIncludeModules(userStockId);
-        for (UserCategory userCategory : userCategories) {
-            int categoryId = userCategory.getId();
+                    List<ModuleDTO> categoryModules = userCategory.getModules()
+                            .stream()
+                            .map(module -> new ModuleDTO(
+                                    module.getId(),
+                                    userCategoryId,
+                                    module.getHeight(),
+                                    module.getWidth(),
+                                    module.getX(),
+                                    module.getY(),
+                                    module.getModuleType(),
+                                    module.getContent())
+                            )
+                            .toList();
 
-            List<ModuleDTO> categoryModules = userCategory.getModules()
-                    .stream()
-                    .map(module -> new ModuleDTO(
-                            module.getId(),
-                            categoryId,
-                            module.getHeight(),
-                            module.getWidth(),
-                            module.getX(),
-                            module.getY(),
-                            module.getModuleType(),
-                            module.getContent())
-                    )
-                    .collect(Collectors.toList());
-
-            categoryTabs.add(new UserCategoryTabDTO(categoryId, userCategory.getName(), categoryModules));
-        }
+                    return new UserCategoryTabDTO(userCategoryId, userCategory.getName(), categoryModules);
+                })
+                .toList();
 
         UserStockTabDTO stockTab = new UserStockTabDTO(userStockId, categoryTabs);
 

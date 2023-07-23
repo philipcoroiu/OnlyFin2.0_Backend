@@ -15,5 +15,5 @@ public interface UserCategoryRepository extends JpaRepository<UserCategory, Inte
             FROM UserCategory category
             WHERE category.userStock.id = :userStockId
             """)
-    List<UserCategory> findByUserStockIdIncludeModules(Integer userStockId);
+    List<UserCategory> findByUserStockIdHydrateModules(Integer userStockId);
 }
