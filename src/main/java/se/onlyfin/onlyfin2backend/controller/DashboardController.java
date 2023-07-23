@@ -329,10 +329,16 @@ public class DashboardController {
         return ResponseEntity.ok().body(stockTab);
     }
 
+    /**
+     * Fetches metadata for the logged-in users dashboard (user stocks, user categories, NOT modules)
+     *
+     * @param principal the logged-in user
+     * @return HTTP 200 OK if successful. HTTP 401 if not logged in
+     */
     @GetMapping("/metadata")
-    public ResponseEntity<DashboardDTO> fetchDashboardMetadata(Principal principal) {
-        User actingUser = userService.getUserOrException(principal.getName());
-        Integer userId = actingUser.getId();
+    public ResponseEntity<DashboardMetadataDTO> fetchDashboardMetadata(Principal principal) {
+        User targetUser = userService.getUserOrException(principal.getName());
+        Integer userId = targetUser.getId();
 
         List<UserStockTabDTO> stockTabs = userStockRepository.findByUserIdHydrateStocksAndCategories(userId)
                 .stream()
@@ -344,6 +350,52 @@ public class DashboardController {
                                         userCategory.getId(),
                                         userCategory.getName(),
                                         null)
+                                )
+                                .toList()
+                ))
+                .toList();
+
+        DashboardMetadataDTO dashboardMetadata = new DashboardMetadataDTO(stockTabs);
+
+        return ResponseEntity.ok().body(dashboardMetadata);
+    }
+
+    /**
+     * WORK IN PROGRESS: NEED TO FIND A WAY TO FETCH COLLECTIONS OF COLLECTIONS...
+     * <p>
+     * Fetches the whole dashboard including user stocks, user categories, and modules.
+     *
+     * @param principal the logged-in user
+     * @return HTTP 200 OK if successful. HTTP 401 if not logged in.
+     */
+    //@GetMapping("/all-the-things")
+    public ResponseEntity<DashboardDTO> fetchAllTheThings(Principal principal) {
+        User targetUser = userService.getUserOrException(principal.getName());
+        Integer userId = targetUser.getId();
+
+        List<UserStockTabDTO> stockTabs = userStockRepository.findByUserIdHydrateStocksAndCategories(userId)
+                .stream()
+                .map(userStock -> new UserStockTabDTO(
+                        userStock.getId(),
+                        userStock.getCategories()
+                                .stream()
+                                .map(userCategory -> new UserCategoryTabDTO(
+                                        userCategory.getId(),
+                                        userCategory.getName(),
+                                        userCategory.getModules()
+                                                .stream()
+                                                .map(dashboardModule -> new ModuleDTO(
+                                                        dashboardModule.getId(),
+                                                        userCategory.getId(),
+                                                        dashboardModule.getHeight(),
+                                                        dashboardModule.getWidth(),
+                                                        dashboardModule.getX(),
+                                                        dashboardModule.getY(),
+                                                        dashboardModule.getModuleType(),
+                                                        dashboardModule.getContent()
+                                                ))
+                                                .toList()
+                                        )
                                 )
                                 .toList()
                 ))

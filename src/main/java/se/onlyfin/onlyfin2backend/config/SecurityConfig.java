@@ -45,6 +45,7 @@ public class SecurityConfig {
                         "/",
                         "/login",
                         "/plz",
+
                         "/users/whoami",
                         "/users/register",
                         "/users/search/all",
@@ -52,12 +53,15 @@ public class SecurityConfig {
                         "/users/username",
                         "/users/about-me",
                         "/users/profile-picture",
+
                         "/stocks/all",
                         "/stocks/search",
+
                         "/dash/fetch-user-stocks",
                         "/dash/fetch-categories-and-modules-under-user-stock",
-                        "/dash/metadata",
+
                         "/search/covers-stock",
+
                         "/reviews/get"
                 )
                 .permitAll()
@@ -72,13 +76,17 @@ public class SecurityConfig {
                         "/dash/add-module",
                         "/dash/update-module",
                         "/dash/delete-module",
+                        "/dash/metadata",
+
                         "/users/update-about-me",
                         "/users/password-change",
                         "/users/update-profile-picture",
+
                         "/subscriptions/add",
                         "/subscriptions/remove",
                         "/subscriptions/check",
                         "/subscriptions/list",
+
                         "/reviews/push",
                         "/reviews/delete",
                         "/reviews/my-review"

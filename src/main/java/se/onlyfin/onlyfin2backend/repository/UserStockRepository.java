@@ -1,6 +1,5 @@
 package se.onlyfin.onlyfin2backend.repository;
 
-import org.hibernate.mapping.Property;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
@@ -26,13 +25,6 @@ public interface UserStockRepository extends CrudRepository<UserStock, Integer> 
             WHERE userStock.user.id = :userId
             """)
     List<UserStock> findByUserIdHydrateStocksAndCategories(Integer userId);
-
-    @EntityGraph(attributePaths = {"stock", "categories", "categories.modules"})
-    @Query("""
-            FROM UserStock userStock
-            WHERE userStock.user.id = :userId
-            """)
-    List<UserStock> findByUserIdHydrateStocksAndCategoriesAndModules(Integer userId);
 
     @Query("""
             SELECT DISTINCT userStock.user
