@@ -330,7 +330,7 @@ public class DashboardController {
     }
 
     @GetMapping("/metadata")
-    public ResponseEntity<DashboardDTO> fetchCategoriesUnderUserStock(Principal principal) {
+    public ResponseEntity<DashboardDTO> fetchDashboardMetadata(Principal principal) {
         User actingUser = userService.getUserOrException(principal.getName());
         Integer userId = actingUser.getId();
 
