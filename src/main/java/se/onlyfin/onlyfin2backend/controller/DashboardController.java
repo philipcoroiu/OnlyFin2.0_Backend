@@ -323,7 +323,7 @@ public class DashboardController {
                 })
                 .toList();
 
-        UserStockTabDTO stockTab = new UserStockTabDTO(userStockId, categoryTabs);
+        UserStockTabDTO stockTab = new UserStockTabDTO(userStockId, userStock.getStock(), categoryTabs);
 
         return ResponseEntity.ok().body(stockTab);
     }
@@ -343,6 +343,7 @@ public class DashboardController {
                 .stream()
                 .map(userStock -> new UserStockTabDTO(
                         userStock.getId(),
+                        userStock.getStock(),
                         userStock.getCategories()
                                 .stream()
                                 .map(userCategory -> new UserCategoryTabDTO(
@@ -376,6 +377,7 @@ public class DashboardController {
                 .stream()
                 .map(userStock -> new UserStockTabDTO(
                         userStock.getId(),
+                        userStock.getStock(),
                         userStock.getCategories()
                                 .stream()
                                 .map(userCategory -> new UserCategoryTabDTO(
