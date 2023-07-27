@@ -4,9 +4,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-import se.onlyfin.onlyfin2backend.DTO.incoming.CategoryCreationDTO;
-import se.onlyfin.onlyfin2backend.DTO.incoming.CategoryUpdateDTO;
-import se.onlyfin.onlyfin2backend.DTO.incoming.ModulePostDTO;
+import se.onlyfin.onlyfin2backend.DTO.incoming.*;
 import se.onlyfin.onlyfin2backend.DTO.outgoing.*;
 import se.onlyfin.onlyfin2backend.model.*;
 import se.onlyfin.onlyfin2backend.repository.DashboardModuleRepository;
@@ -208,7 +206,7 @@ public class DashboardController {
     }
 
     /**
-     * Updates a module on the logged-in user's dashboard
+     * Updates a module's content on the logged-in user's dashboard
      *
      * @param principal       The logged-in user
      * @param moduleId        The id of the module to update
@@ -216,7 +214,7 @@ public class DashboardController {
      * @return 200 OK if successful, 404 Not Found if the module doesn't exist, 403 Forbidden if the user doesn't own the module
      */
     @PutMapping("/update-module")
-    public ResponseEntity<?> updateModule(Principal principal, @RequestParam Integer moduleId, @RequestBody ModulePostDTO moduleUpdateDTO) {
+    public ResponseEntity<?> updateModule(Principal principal, @RequestParam Integer moduleId, @RequestBody ModuleUpdateDTO moduleUpdateDTO) {
         User actingUser = userService.getUserOrException(principal.getName());
 
         DashboardModule targetModule = dashboardModuleRepository.findById(moduleId).orElse(null);
@@ -228,12 +226,38 @@ public class DashboardController {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
 
-        targetModule.setHeight(moduleUpdateDTO.height());
-        targetModule.setWidth(moduleUpdateDTO.width());
-        targetModule.setX(moduleUpdateDTO.xAxis());
-        targetModule.setY(moduleUpdateDTO.yAxis());
         targetModule.setModuleType(moduleUpdateDTO.type());
         targetModule.setContent(moduleUpdateDTO.content());
+        dashboardModuleRepository.save(targetModule);
+
+        return ResponseEntity.ok().build();
+    }
+
+    /**
+     * Updates a module's layout on the logged-in user's dashboard
+     *
+     * @param principal       The logged-in user
+     * @param moduleId        The id of the module to update
+     * @param moduleLayoutUpdateDTO The module layout update DTO
+     * @return 200 OK if successful, 404 Not Found if the module doesn't exist, 403 Forbidden if the user doesn't own the module
+     */
+    @PutMapping("/update-module-layout")
+    public ResponseEntity<?> updateModuleLayout(Principal principal, @RequestParam Integer moduleId, @RequestBody ModuleLayoutUpdateDTO moduleLayoutUpdateDTO) {
+        User actingUser = userService.getUserOrException(principal.getName());
+
+        DashboardModule targetModule = dashboardModuleRepository.findById(moduleId).orElse(null);
+        if (targetModule == null) {
+            return ResponseEntity.notFound().build();
+        }
+        //permission check
+        if (!Objects.equals(actingUser.getId(), targetModule.getUserCategory().getUserStock().getUser().getId())) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
+        targetModule.setHeight(moduleLayoutUpdateDTO.height());
+        targetModule.setWidth(moduleLayoutUpdateDTO.width());
+        targetModule.setX(moduleLayoutUpdateDTO.xAxis());
+        targetModule.setY(moduleLayoutUpdateDTO.yAxis());
         dashboardModuleRepository.save(targetModule);
 
         return ResponseEntity.ok().build();
