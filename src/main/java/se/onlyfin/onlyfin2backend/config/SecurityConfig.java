@@ -76,6 +76,7 @@ public class SecurityConfig {
                         "/dash/add-module",
                         "/dash/update-module",
                         "/dash/update-module-layout",
+                        "/dash/update-module-layout-batch",
                         "/dash/delete-module",
                         "/dash/metadata",
 

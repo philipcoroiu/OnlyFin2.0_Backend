@@ -1,5 +1,6 @@
 package se.onlyfin.onlyfin2backend.controller;
 
+import jakarta.transaction.Transactional;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -15,6 +16,7 @@ import se.onlyfin.onlyfin2backend.service.UserService;
 
 import java.security.Principal;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 
@@ -259,6 +261,48 @@ public class DashboardController {
         targetModule.setX(moduleLayoutUpdateDTO.xAxis());
         targetModule.setY(moduleLayoutUpdateDTO.yAxis());
         dashboardModuleRepository.save(targetModule);
+
+        return ResponseEntity.ok().build();
+    }
+
+    /**
+     * Updates a module's layout on the logged-in user's dashboard
+     *
+     * @param principal       The logged-in user
+     * @param categoryId        The id of the category whose modules are to receive layout updates
+     * @param moduleLayoutUpdateBatchDTOs The module layout update DTOs
+     * @return 200 OK if successful, 404 Not Found if the category doesn't exist, 403 Forbidden if the user doesn't own the category
+     */
+    @PutMapping("/update-module-layout-batch")
+    @Transactional
+    public ResponseEntity<?> updateModuleLayoutBatch(Principal principal, @RequestParam Integer categoryId, @RequestBody List<ModuleLayoutUpdateBatchDTO> moduleLayoutUpdateBatchDTOs) {
+        User actingUser = userService.getUserOrException(principal.getName());
+
+        UserCategory targetCategory = userCategoryRepository.findByIdHydrateModules(categoryId).orElse(null);
+        if (targetCategory == null) {
+            return ResponseEntity.notFound().build();
+        }
+        //permission check
+        if (!Objects.equals(actingUser.getId(), targetCategory.getUserStock().getUser().getId())) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
+        List<DashboardModule> dashboardModules = targetCategory.getModules();
+
+        HashMap<Integer, DashboardModule> idToDashboardModule = new HashMap<>(dashboardModules.size());
+        for (DashboardModule dashboardModule : dashboardModules) {
+            idToDashboardModule.put(dashboardModule.getId(), dashboardModule);
+        }
+
+        for (ModuleLayoutUpdateBatchDTO moduleLayout : moduleLayoutUpdateBatchDTOs) {
+            DashboardModule matchedModule = idToDashboardModule.get(moduleLayout.moduleId());
+            matchedModule.setHeight(moduleLayout.height());
+            matchedModule.setWidth(moduleLayout.width());
+            matchedModule.setX(moduleLayout.xAxis());
+            matchedModule.setY(moduleLayout.yAxis());
+        }
+
+        dashboardModuleRepository.saveAll(dashboardModules);
 
         return ResponseEntity.ok().build();
     }
