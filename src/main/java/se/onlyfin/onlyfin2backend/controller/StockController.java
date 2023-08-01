@@ -7,7 +7,9 @@ import org.springframework.web.bind.annotation.*;
 import se.onlyfin.onlyfin2backend.DTO.incoming.CustomStockPostDTO;
 import se.onlyfin.onlyfin2backend.model.Stock;
 import se.onlyfin.onlyfin2backend.model.User;
+import se.onlyfin.onlyfin2backend.model.UserStock;
 import se.onlyfin.onlyfin2backend.repository.StockRepository;
+import se.onlyfin.onlyfin2backend.repository.UserStockRepository;
 import se.onlyfin.onlyfin2backend.service.UserService;
 
 import java.security.Principal;
@@ -23,10 +25,13 @@ import java.util.Optional;
 public class StockController {
     private final StockRepository stockRepository;
     private final UserService userService;
+    private final UserStockRepository userStockRepository;
 
-    public StockController(StockRepository stockRepository, UserService userService) {
+
+    public StockController(StockRepository stockRepository, UserService userService, UserStockRepository userStockRepository) {
         this.stockRepository = stockRepository;
         this.userService = userService;
+        this.userStockRepository = userStockRepository;
     }
 
     /**
@@ -68,12 +73,20 @@ public class StockController {
             return ResponseEntity.badRequest().build();
         }
 
+        //Creates the custom stock.
         Stock customStock = new Stock();
         customStock.setOwner(actingUser);
         customStock.setName(customStockPostDTO.name());
         customStock.setTicker(customStockPostDTO.ticker());
 
         stockRepository.save(customStock);
+
+        //Adds the stock to the users dashboard.
+        UserStock userStock = new UserStock();
+        userStock.setUser(actingUser);
+        userStock.setStock(customStock);
+
+        userStockRepository.save(userStock);
 
         return ResponseEntity.ok().build();
     }

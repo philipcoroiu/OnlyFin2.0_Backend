@@ -57,6 +57,10 @@ public class DashboardController {
         if (targetStock == null) {
             return ResponseEntity.notFound().build();
         }
+        //check if acting user is the owner of the stock or if stock is global
+        if (targetStock.getOwner() != null && targetStock.getOwner() != actingUser) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
 
         UserStock userStock = new UserStock();
         userStock.setUser(actingUser);
@@ -82,9 +86,17 @@ public class DashboardController {
         if (targetUserStock == null) {
             return ResponseEntity.notFound().build();
         }
+
         //permission check
         if (!Objects.equals(actingUser.getId(), targetUserStock.getUser().getId())) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
+        //custom stock scenario
+        if (targetUserStock.getStock().getOwner() != null) {
+            stockRepository.delete(targetUserStock.getStock());
+
+            return ResponseEntity.ok().build();
         }
 
         userStockRepository.deleteById(targetUserStockId);
