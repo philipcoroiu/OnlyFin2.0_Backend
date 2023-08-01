@@ -80,6 +80,9 @@ public class SecurityConfig {
                         "/dash/delete-module",
                         "/dash/metadata",
 
+                        "/stocks/add-custom-stock",
+                        "/stocks/delete-custom-stock",
+
                         "/users/update-about-me",
                         "/users/password-change",
                         "/users/update-profile-picture",

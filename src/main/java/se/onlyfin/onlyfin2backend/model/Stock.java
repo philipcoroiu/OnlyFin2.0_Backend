@@ -1,10 +1,12 @@
 package se.onlyfin.onlyfin2backend.model;
 
+import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 
 /**
  * This class represents the stock table in the database.
  * A stock is a name & ticker - for example, "Apple Inc." and "AAPL"
+ * It also contains an owner if it isn't a global stock
  */
 @Entity
 @Table
@@ -18,6 +20,10 @@ public class Stock {
 
     @Column
     private String ticker;
+
+    @Nullable
+    @ManyToOne
+    private User owner;
 
     public Integer getId() {
         return id;
@@ -41,5 +47,13 @@ public class Stock {
 
     public void setTicker(String ticker) {
         this.ticker = ticker;
+    }
+
+    public User getOwner() {
+        return owner;
+    }
+
+    public void setOwner(User owner) {
+        this.owner = owner;
     }
 }

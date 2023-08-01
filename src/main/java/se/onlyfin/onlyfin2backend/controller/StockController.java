@@ -1,14 +1,16 @@
 package se.onlyfin.onlyfin2backend.controller;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
+import se.onlyfin.onlyfin2backend.DTO.incoming.CustomStockPostDTO;
 import se.onlyfin.onlyfin2backend.model.Stock;
+import se.onlyfin.onlyfin2backend.model.User;
 import se.onlyfin.onlyfin2backend.repository.StockRepository;
+import se.onlyfin.onlyfin2backend.service.UserService;
 
+import java.security.Principal;
 import java.util.List;
 import java.util.Optional;
 
@@ -20,9 +22,11 @@ import java.util.Optional;
 @Controller
 public class StockController {
     private final StockRepository stockRepository;
+    private final UserService userService;
 
-    public StockController(StockRepository stockRepository) {
+    public StockController(StockRepository stockRepository, UserService userService) {
         this.stockRepository = stockRepository;
+        this.userService = userService;
     }
 
     /**
@@ -32,7 +36,7 @@ public class StockController {
      */
     @GetMapping("/all")
     public ResponseEntity<List<Stock>> getAllStocks() {
-        List<Stock> stocks = stockRepository.findAll();
+        List<Stock> stocks = stockRepository.findAllByOwnerIsNull();
         if (stocks.isEmpty()) {
             return ResponseEntity.noContent().build();
         }
@@ -48,12 +52,47 @@ public class StockController {
      */
     @GetMapping("/search")
     public ResponseEntity<?> findStocksByName(@RequestParam String name) {
-        List<Stock> stocksFound = stockRepository.findByNameContainingIgnoreCase(name);
+        List<Stock> stocksFound = stockRepository.findByNameContainingIgnoreCaseAndOwnerIsNull(name);
         if (stocksFound.isEmpty()) {
             return ResponseEntity.noContent().build();
         }
 
         return ResponseEntity.ok().body(stocksFound);
+    }
+
+    @PostMapping("/add-custom-stock")
+    public ResponseEntity<?> addCustomStock(Principal principal, @RequestBody CustomStockPostDTO customStockPostDTO) {
+        User actingUser = userService.getUserOrException(principal.getName());
+
+        if (customStockPostDTO.ticker().length() > 10) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        Stock customStock = new Stock();
+        customStock.setOwner(actingUser);
+        customStock.setName(customStockPostDTO.name());
+        customStock.setTicker(customStockPostDTO.ticker());
+
+        stockRepository.save(customStock);
+
+        return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping("/delete-custom-stock")
+    public ResponseEntity<?> deleteCustomStock(Principal principal, @RequestParam Integer customStockId) {
+        User actingUser = userService.getUserOrException(principal.getName());
+
+        Stock targetStock = stockRepository.findById(customStockId).orElse(null);
+        if (targetStock == null) {
+            return ResponseEntity.notFound().build();
+        }
+        if (actingUser != targetStock.getOwner()) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
+        stockRepository.deleteById(customStockId);
+
+        return ResponseEntity.ok().build();
     }
 
     public Optional<Stock> getStock(Integer id) {

@@ -31,8 +31,7 @@ public interface UserStockRepository extends CrudRepository<UserStock, Integer> 
     @Query("""
             SELECT DISTINCT userStock.user
             FROM UserStock userStock
-            WHERE userStock.stock.id = :stockId
-            ORDER BY userStock.stock.name
+            WHERE (userStock.stock.id = :stockId) AND (userStock.stock.owner IS NULL)
             """)
     Set<User> findUsersByStockId(Integer stockId);
 }

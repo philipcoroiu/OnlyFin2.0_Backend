@@ -6,5 +6,7 @@ import se.onlyfin.onlyfin2backend.model.Stock;
 import java.util.List;
 
 public interface StockRepository extends JpaRepository<Stock, Integer> {
-    List<Stock> findByNameContainingIgnoreCase(String name);
+    List<Stock> findByNameContainingIgnoreCaseAndOwnerIsNull(String name);
+
+    List<Stock> findAllByOwnerIsNull();
 }
