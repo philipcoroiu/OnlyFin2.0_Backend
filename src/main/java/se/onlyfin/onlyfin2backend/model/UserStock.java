@@ -9,7 +9,7 @@ import java.util.List;
  * This class represents the user_stock table in the database.
  * A user stock is used for modeling users' dashboard stock tabs.
  * It contains a link to a stock (name & ticker) as well as who owns the user stock.
- *
+ * <p>
  * <br/>
  * (See also: {@link Stock})
  */

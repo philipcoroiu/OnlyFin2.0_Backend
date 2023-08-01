@@ -12,7 +12,7 @@ import java.time.Instant;
  * A dashboard module contains content in the form of a JSON object.
  * It also contains other metadata required, such as post-date, update-date, and size for the dashboard grid.
  * It also contains a link back to the user category that contains it.
- *
+ * <p>
  * <br/>
  * (See also: {@link UserCategory})
  */

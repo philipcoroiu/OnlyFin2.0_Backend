@@ -9,7 +9,7 @@ import java.util.List;
  * This class represents the user_category table in the database.
  * A user category models users' dashboard category tabs.
  * It contains a category name and a link back to the user stock that the category exists under.
- *
+ * <p>
  * <br/>
  * (See also: {@link UserStock})
  */

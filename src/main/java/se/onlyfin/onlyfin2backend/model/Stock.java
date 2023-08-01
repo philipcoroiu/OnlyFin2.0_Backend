@@ -15,10 +15,11 @@ public class Stock {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(unique = true)
+    @Column
     private String name;
 
     @Column
+    @Nullable
     private String ticker;
 
     @Nullable
@@ -41,11 +42,12 @@ public class Stock {
         this.name = name;
     }
 
+    @Nullable
     public String getTicker() {
         return ticker;
     }
 
-    public void setTicker(String ticker) {
+    public void setTicker(@Nullable String ticker) {
         this.ticker = ticker;
     }
 
