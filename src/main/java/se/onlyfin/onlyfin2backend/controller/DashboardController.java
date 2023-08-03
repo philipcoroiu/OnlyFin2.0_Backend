@@ -246,7 +246,14 @@ public class DashboardController {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
 
-        ModuleDTO module = new ModuleDTO(dashboardModule.getId(), dashboardModule.getUserCategory().getId(), dashboardModule.getHeight(), dashboardModule.getWidth(), dashboardModule.getX(), dashboardModule.getY(), dashboardModule.getModuleType(), dashboardModule.getContent());
+        ModuleDTO module = new ModuleDTO(dashboardModule.getId(),
+                dashboardModule.getUserCategory().getId(),
+                dashboardModule.getHeight(),
+                dashboardModule.getWidth(),
+                dashboardModule.getX(),
+                dashboardModule.getY(),
+                dashboardModule.getModuleType(),
+                dashboardModule.getContent());
 
         return ResponseEntity.ok().body(module);
     }
