@@ -51,11 +51,12 @@ public class Stock {
         this.ticker = ticker;
     }
 
+    @Nullable
     public User getOwner() {
         return owner;
     }
 
-    public void setOwner(User owner) {
+    public void setOwner(@Nullable User owner) {
         this.owner = owner;
     }
 }

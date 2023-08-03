@@ -3,6 +3,7 @@ package se.onlyfin.onlyfin2backend.repository;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
+import se.onlyfin.onlyfin2backend.model.Stock;
 import se.onlyfin.onlyfin2backend.model.User;
 import se.onlyfin.onlyfin2backend.model.UserStock;
 
@@ -34,4 +35,6 @@ public interface UserStockRepository extends CrudRepository<UserStock, Integer> 
             WHERE (userStock.stock.id = :stockId) AND (userStock.stock.owner IS NULL)
             """)
     Set<User> findUsersByStockId(Integer stockId);
+
+    boolean existsByUserAndStock(User user, Stock stock);
 }

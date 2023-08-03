@@ -47,7 +47,8 @@ public class DashboardController {
      *
      * @param principal     The logged-in user
      * @param targetStockId The id of the stock to add
-     * @return 200 OK if successful, 404 Not Found if the stock doesn't exist
+     * @return HTTP 200 OK if successful, HTTP 404 Not Found if the stock doesn't exist,
+     * HTTP 400 BAD REQUEST if the stock already exists in the user's dashboard
      */
     @PostMapping("/add-stock")
     public ResponseEntity<String> addStock(Principal principal, @RequestParam Integer targetStockId) {
@@ -58,13 +59,21 @@ public class DashboardController {
             return ResponseEntity.notFound().build();
         }
         //check if acting user is the owner of the stock or if stock is global
-        if (targetStock.getOwner() != null && targetStock.getOwner() != actingUser) {
+        boolean isCustomStock = (targetStock.getOwner() != null);
+        boolean userOwnStock = (targetStock.getOwner() == actingUser);
+        if (isCustomStock && !userOwnStock) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
 
         UserStock userStock = new UserStock();
         userStock.setUser(actingUser);
         userStock.setStock(targetStock);
+
+        boolean stockIsAlreadyAdded = userStockRepository.existsByUserAndStock(actingUser, targetStock);
+        if (stockIsAlreadyAdded) {
+            return ResponseEntity.badRequest().build();
+        }
+
         userStockRepository.save(userStock);
 
         return ResponseEntity.ok().body(targetStock.getName());
