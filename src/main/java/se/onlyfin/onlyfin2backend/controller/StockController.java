@@ -69,7 +69,7 @@ public class StockController {
     public ResponseEntity<?> addCustomStock(Principal principal, @RequestBody CustomStockPostDTO customStockPostDTO) {
         User actingUser = userService.getUserOrException(principal.getName());
 
-        if (customStockPostDTO.ticker().length() > 10) {
+        if (customStockPostDTO.ticker() != null && customStockPostDTO.ticker().length() > 10) {
             return ResponseEntity.badRequest().build();
         }
 
