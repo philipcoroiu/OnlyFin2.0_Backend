@@ -229,6 +229,29 @@ public class DashboardController {
     }
 
     /**
+     * @param principal the logged-in user
+     * @param moduleId the target module's id
+     * @return
+     * HTTP 200 OK with module if ok.
+     * HTTP 404 NOT FOUND if target module doesn't exist.
+     * HTTP 403 FORBIDDEN if trying to fetch another user's module
+     */
+    @GetMapping("/fetch-module")
+    public ResponseEntity<ModuleDTO> fetchModule(Principal principal, @RequestParam Integer moduleId) {
+        DashboardModule dashboardModule = dashboardModuleRepository.findById(moduleId).orElse(null);
+        if (dashboardModule == null) {
+            return ResponseEntity.notFound().build();
+        }
+        if (!dashboardModule.getUserCategory().getUserStock().getUser().getUsername().equals(principal.getName())) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
+        ModuleDTO module = new ModuleDTO(dashboardModule.getId(), dashboardModule.getUserCategory().getId(), dashboardModule.getHeight(), dashboardModule.getWidth(), dashboardModule.getX(), dashboardModule.getY(), dashboardModule.getModuleType(), dashboardModule.getContent());
+
+        return ResponseEntity.ok().body(module);
+    }
+
+    /**
      * Updates a module's content on the logged-in user's dashboard
      *
      * @param principal       The logged-in user

@@ -71,6 +71,7 @@ public class SecurityConfig {
                         "/dash/add-stock",
                         "/dash/delete-stock",
                         "/dash/add-category",
+                        "/dash/fetch-module",
                         "/dash/update-category",
                         "/dash/delete-category",
                         "/dash/add-module",
