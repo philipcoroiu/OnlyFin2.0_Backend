@@ -3,6 +3,7 @@ package se.onlyfin.onlyfin2backend.controller;
 import jakarta.transaction.Transactional;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import se.onlyfin.onlyfin2backend.DTO.incoming.*;
@@ -15,10 +16,7 @@ import se.onlyfin.onlyfin2backend.repository.UserStockRepository;
 import se.onlyfin.onlyfin2backend.service.UserService;
 
 import java.security.Principal;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * This class is responsible for handling requests related to the dashboard.
@@ -319,14 +317,14 @@ public class DashboardController {
     /**
      * Updates a module's layout on the logged-in user's dashboard
      *
-     * @param principal       The logged-in user
-     * @param categoryId        The id of the category whose modules are to receive layout updates
-     * @param moduleLayoutUpdateBatchDTOs The module layout update DTOs
+     * @param principal           The logged-in user
+     * @param categoryId          The id of the category whose modules are to receive layout updates
+     * @param moduleLayoutWrapper The module layout update DTOs wrapper
      * @return 200 OK if successful, 404 Not Found if the category doesn't exist, 403 Forbidden if the user doesn't own the category
      */
     @PutMapping("/update-module-layout-batch")
     @Transactional
-    public ResponseEntity<?> updateModuleLayoutBatch(Principal principal, @RequestParam Integer categoryId, @RequestBody List<ModuleLayoutUpdateBatchDTO> moduleLayoutUpdateBatchDTOs) {
+    public ResponseEntity<?> updateModuleLayoutBatch(Principal principal, @RequestParam Integer categoryId, @RequestBody ModuleLayoutUpdateBatchDTOWrapper moduleLayoutWrapper) {
         User actingUser = userService.getUserOrException(principal.getName());
 
         UserCategory targetCategory = userCategoryRepository.findByIdHydrateModules(categoryId).orElse(null);
@@ -345,7 +343,7 @@ public class DashboardController {
             idToDashboardModule.put(dashboardModule.getId(), dashboardModule);
         }
 
-        for (ModuleLayoutUpdateBatchDTO moduleLayout : moduleLayoutUpdateBatchDTOs) {
+        for (ModuleLayoutUpdateBatchDTO moduleLayout : moduleLayoutWrapper.moduleLayouts()) {
             DashboardModule matchedModule = idToDashboardModule.get(moduleLayout.moduleId());
             matchedModule.setHeight(moduleLayout.height());
             matchedModule.setWidth(moduleLayout.width());
