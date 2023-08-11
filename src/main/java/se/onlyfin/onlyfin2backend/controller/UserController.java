@@ -1,5 +1,6 @@
 package se.onlyfin.onlyfin2backend.controller;
 
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.Nullable;
@@ -12,13 +13,16 @@ import se.onlyfin.onlyfin2backend.DTO.incoming.UserDTO;
 import se.onlyfin.onlyfin2backend.DTO.outgoing.ProfileDTO;
 import se.onlyfin.onlyfin2backend.DTO.outgoing.ProfileExtendedDTO;
 import se.onlyfin.onlyfin2backend.DTO.outgoing.ProfileSubInfoDTO;
+import se.onlyfin.onlyfin2backend.model.CloudflareTurnstileRequest;
 import se.onlyfin.onlyfin2backend.model.RegistrationResponse;
 import se.onlyfin.onlyfin2backend.model.User;
+import se.onlyfin.onlyfin2backend.service.CloudflareTurnstileService;
 import se.onlyfin.onlyfin2backend.service.UserService;
 
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * TODO: ADD MORE API CALLS FOR USER SERVICE FUNCTIONS
@@ -30,10 +34,12 @@ import java.util.List;
 public class UserController {
     private final UserService userService;
     private final SubscriptionController subscriptionController;
+    private final CloudflareTurnstileService turnstileService;
 
-    public UserController(UserService userService, SubscriptionController subscriptionController) {
+    public UserController(UserService userService, SubscriptionController subscriptionController, CloudflareTurnstileService turnstileService) {
         this.userService = userService;
         this.subscriptionController = subscriptionController;
+        this.turnstileService = turnstileService;
     }
 
     /**
@@ -55,12 +61,21 @@ public class UserController {
 
     /**
      * Registers a new user. If the username or email is already registered, a bad request is returned.
+     * If the turnstile challenge fails, a bad request is returned
      *
      * @param userDTO UserDTO containing username, password and email.
      * @return HTTP 200 OK if registration was successful. HTTP 400 BAD REQUEST with an error message if registration failed.
      */
     @PostMapping("/register")
-    public ResponseEntity<String> registerNewUser(@RequestBody UserDTO userDTO) {
+    public ResponseEntity<String> registerNewUser(@RequestBody UserDTO userDTO, HttpServletRequest httpServletRequest) {
+        CloudflareTurnstileRequest turnstileRequest = new CloudflareTurnstileRequest();
+        turnstileRequest.setResponse(userDTO.turnstileToken());
+        turnstileRequest.setRemoteIp(Objects.requireNonNullElse(httpServletRequest.getHeader("CF-Connecting-IP"), "localhost")); //TODO: remove localhost fallback in prod!
+
+        if (!turnstileService.verifyToken(turnstileRequest)) {
+            return ResponseEntity.badRequest().body("Token error!");
+        }
+
         RegistrationResponse registrationResponse = userService.registerUser(userDTO);
 
         return switch (registrationResponse) {
