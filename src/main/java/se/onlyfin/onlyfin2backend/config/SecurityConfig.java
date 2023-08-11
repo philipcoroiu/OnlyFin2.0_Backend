@@ -14,10 +14,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.HttpStatusEntryPoint;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-import se.onlyfin.onlyfin2backend.model.TurnstileLoginFilter;
 
 /**
  * This class is used to configure the security settings in Spring Security.
@@ -101,8 +99,6 @@ public class SecurityConfig {
                 )
                 .hasRole("USER")
         );
-
-        http.addFilterBefore(new TurnstileLoginFilter(), UsernamePasswordAuthenticationFilter.class);
 
         http.formLogin(loginForm -> loginForm
                 .loginProcessingUrl("/plz")
