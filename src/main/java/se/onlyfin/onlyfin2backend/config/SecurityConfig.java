@@ -1,6 +1,7 @@
 package se.onlyfin.onlyfin2backend.config;
 
 import lombok.NonNull;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -46,23 +47,25 @@ public class SecurityConfig {
                         "/login",
                         "/plz",
 
+                        "/dash/fetch-user-stocks",
+                        "/dash/fetch-categories-and-modules-under-user-stock",
+
+                        "/stocks/all",
+                        "/stocks/search",
+
+                        "/subscriptions/count",
+
+                        "/reviews/get",
+
+                        "/search/covers-stock",
+
                         "/users/whoami",
                         "/users/register",
                         "/users/search/newest",
                         "/users/search/username",
                         "/users/username",
                         "/users/about-me",
-                        "/users/profile-picture",
-
-                        "/stocks/all",
-                        "/stocks/search",
-
-                        "/dash/fetch-user-stocks",
-                        "/dash/fetch-categories-and-modules-under-user-stock",
-
-                        "/search/covers-stock",
-
-                        "/reviews/get"
+                        "/users/profile-picture"
                 )
                 .permitAll()
 
@@ -84,10 +87,6 @@ public class SecurityConfig {
                         "/stocks/add-custom-stock",
                         "/stocks/delete-custom-stock",
 
-                        "/users/update-about-me",
-                        "/users/password-change",
-                        "/users/update-profile-picture",
-
                         "/subscriptions/add",
                         "/subscriptions/remove",
                         "/subscriptions/check",
@@ -95,7 +94,11 @@ public class SecurityConfig {
 
                         "/reviews/push",
                         "/reviews/delete",
-                        "/reviews/my-review"
+                        "/reviews/my-review",
+
+                        "/users/update-about-me",
+                        "/users/password-change",
+                        "/users/update-profile-picture"
                 )
                 .hasRole("USER")
         );

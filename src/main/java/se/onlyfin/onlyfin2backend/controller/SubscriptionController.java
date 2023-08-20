@@ -129,6 +129,24 @@ public class SubscriptionController {
         return ResponseEntity.ok().body(profiles);
     }
 
+    /**
+     * Returns the subscription count of a specified user
+     *
+     * @param targetUsername username of the target user
+     * @return the number of users subscribed to the target user
+     */
+    @GetMapping("/count")
+    public ResponseEntity<Number> getUserSubscriptionCount(@RequestParam String targetUsername) {
+        User targetUser = userService.getUserOrNull(targetUsername);
+        if (targetUser == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        Long subscriptionCount = subscriptionRepository.countByIdSubscribedTo(targetUser);
+
+        return ResponseEntity.ok().body(subscriptionCount);
+    }
+
     public boolean subCheck(User subscribingUser, User subscribedToUser) {
         SubscriptionId subscriptionId = new SubscriptionId();
         subscriptionId.setSubscriber(subscribingUser);

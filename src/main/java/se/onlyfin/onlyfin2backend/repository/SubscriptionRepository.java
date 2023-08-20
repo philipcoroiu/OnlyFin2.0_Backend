@@ -9,4 +9,5 @@ import java.util.List;
 
 public interface SubscriptionRepository extends JpaRepository<Subscription, SubscriptionId> {
     List<Subscription> findByIdSubscriber(User subscriber);
+    Long countByIdSubscribedTo(User subscribedToUser);
 }
