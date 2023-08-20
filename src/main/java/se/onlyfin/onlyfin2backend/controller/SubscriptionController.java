@@ -130,10 +130,10 @@ public class SubscriptionController {
     }
 
     /**
-     * Returns the subscription count of a specified user
+     * Returns the subscription count of a specified user.
      *
      * @param targetUsername username of the target user
-     * @return the number of users subscribed to the target user
+     * @return HTTP 200 and the subscription count of a specified user. HTTP 404 if the target username doesn't exist
      */
     @GetMapping("/count")
     public ResponseEntity<Number> getUserSubscriptionCount(@RequestParam String targetUsername) {
