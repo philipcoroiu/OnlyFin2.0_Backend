@@ -1,5 +1,6 @@
 package se.onlyfin.onlyfin2backend.controller;
 
+import lombok.NonNull;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -161,6 +162,10 @@ public class SubscriptionController {
         return subscriptions.stream()
                 .map(currentSubscription -> currentSubscription.getId().getSubscribedTo())
                 .toList();
+    }
+
+    public Long getSubscriptionCount(@NonNull User targetUser) {
+        return subscriptionRepository.countByIdSubscribedTo(targetUser);
     }
 
 }

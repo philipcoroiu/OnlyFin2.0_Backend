@@ -118,7 +118,7 @@ public class UserController {
      * @return The user with the given username. If no user is found, a 404 NOT FOUND is returned.
      */
     @GetMapping("/username")
-    public ResponseEntity<?> findByUsername(Principal principal, @RequestParam String username) {
+    public ResponseEntity<ProfileExtendedDTO> findByUsername(Principal principal, @RequestParam String username) {
         //acting user is optional as it is only needed for sub check.
         // will fall back to subscribing=false if not logged in
         User actingUser = null;
@@ -309,18 +309,21 @@ public class UserController {
                     targetUser.getUsername(),
                     false,
                     targetUser.getAboutMe(),
-                    false
+                    false,
+                    subscriptionController.getSubscriptionCount(targetUser)
             );
         }
 
         boolean isSubscribed = subscriptionController.subCheck(actingUser, targetUser);
         boolean isSelf = (actingUser == targetUser);
 
-        return new ProfileExtendedDTO(targetUser.getId(),
+        return new ProfileExtendedDTO(
+                targetUser.getId(),
                 targetUser.getUsername(),
                 isSubscribed,
                 targetUser.getAboutMe(),
-                isSelf
+                isSelf,
+                subscriptionController.getSubscriptionCount(targetUser)
         );
     }
 
