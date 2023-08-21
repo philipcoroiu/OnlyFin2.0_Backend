@@ -294,12 +294,12 @@ public class UserController {
     public ProfileSubInfoDTO userToProfileWithSubInfo(@Nullable User actingUser, User targetUser) {
         boolean loggedIn = (actingUser != null);
         if (!loggedIn) {
-            return new ProfileSubInfoDTO(targetUser.getId(), targetUser.getUsername(), false, subscriptionController.getSubscriptionCount(targetUser));
+            return new ProfileSubInfoDTO(targetUser.getId(), targetUser.getUsername(), false);
         }
 
         boolean isSubscribed = subscriptionController.subCheck(actingUser, targetUser);
 
-        return new ProfileSubInfoDTO(targetUser.getId(), targetUser.getUsername(), isSubscribed, subscriptionController.getSubscriptionCount(targetUser));
+        return new ProfileSubInfoDTO(targetUser.getId(), targetUser.getUsername(), isSubscribed);
     }
 
     public ProfileExtendedDTO userToProfileExtended(@Nullable User actingUser, User targetUser) {
@@ -335,8 +335,7 @@ public class UserController {
                 profilesWithFallbackSubInfo.add(new ProfileSubInfoDTO(
                         currentUser.getId(),
                         currentUser.getUsername(),
-                        false,
-                        subscriptionController.getSubscriptionCount(currentUser)
+                        false
                 ));
             }
 
@@ -344,15 +343,13 @@ public class UserController {
         }
 
         List<User> subscriptions = subscriptionController.subscriptionList(actingUser);
-
         List<ProfileSubInfoDTO> profilesWithSubInfo = new ArrayList<>();
         for (User currentUser : targetUsers) {
             boolean isSubscribed = subscriptions.contains(currentUser);
             profilesWithSubInfo.add(new ProfileSubInfoDTO(
                     currentUser.getId(),
                     currentUser.getUsername(),
-                    isSubscribed,
-                    subscriptionController.getSubscriptionCount(currentUser)
+                    isSubscribed
             ));
         }
 
