@@ -157,11 +157,7 @@ public class SubscriptionController {
     }
 
     public List<User> subscriptionList(User subscribingUser) {
-        List<Subscription> subscriptions = new ArrayList<>(subscriptionRepository.findByIdSubscriber(subscribingUser));
-
-        return subscriptions.stream()
-                .map(currentSubscription -> currentSubscription.getId().getSubscribedTo())
-                .toList();
+        return subscriptionRepository.findByIdSubscriber(subscribingUser);
     }
 
     public Long getSubscriptionCount(@NonNull User targetUser) {

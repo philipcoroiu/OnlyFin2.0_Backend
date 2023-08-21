@@ -1,5 +1,6 @@
 package se.onlyfin.onlyfin2backend.repository;
 
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.repository.CrudRepository;
 import se.onlyfin.onlyfin2backend.model.User;
 
