@@ -25,7 +25,6 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * TODO: ADD MORE API CALLS FOR USER SERVICE FUNCTIONS
  * This class is responsible for handling requests related to user management.
  */
 @RequestMapping("/users")
@@ -49,7 +48,7 @@ public class UserController {
      * @return The logged-in user's username if logged in, otherwise returns a 204 NO CONTENT.
      */
     @GetMapping("/whoami")
-    public ResponseEntity<?> whoAmI(Principal principal) {
+    public ResponseEntity<String> whoAmI(Principal principal) {
         boolean loggedIn = (principal != null);
 
         if (!loggedIn) {
@@ -93,7 +92,7 @@ public class UserController {
      * @return All analysts in the database except the logged-in user. If no analysts are found, a 204 NO CONTENT is returned.
      */
     @GetMapping("/search/newest")
-    public ResponseEntity<?> findNewest(Principal principal) {
+    public ResponseEntity<List<ProfileSubInfoDTO>> findNewest(Principal principal) {
         boolean loggedIn = (principal != null);
         User loggedInUser = null;
 
@@ -103,7 +102,7 @@ public class UserController {
             analysts.remove(loggedInUser);
         }
         if (analysts.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NO_CONTENT).body("No users were found");
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
         }
 
         List<ProfileSubInfoDTO> profiles = usersToProfilesWithSubInfo(loggedInUser, analysts);
@@ -144,7 +143,7 @@ public class UserController {
      * If no analysts are found, a 204 NO CONTENT is returned.
      */
     @GetMapping("/search/username")
-    public ResponseEntity<?> searchByUsername(Principal principal, @RequestParam String username) {
+    public ResponseEntity<List<ProfileSubInfoDTO>> searchByUsername(Principal principal, @RequestParam String username) {
         boolean loggedIn = (principal != null);
         User loggedInUser = null;
 
@@ -168,7 +167,7 @@ public class UserController {
      * @return The about me text of the user with the given username. If no user is found, a 404 NOT FOUND is returned.
      */
     @GetMapping("/about-me")
-    public ResponseEntity<?> fetchAboutMe(@RequestParam String targetUsername) {
+    public ResponseEntity<String> fetchAboutMe(@RequestParam String targetUsername) {
         User targetUser = userService.getUserOrNull(targetUsername);
         if (targetUser == null) {
             return ResponseEntity.notFound().build();
@@ -188,7 +187,7 @@ public class UserController {
      * HTTP 400 BAD REQUEST if review length is > 2500 characters.
      */
     @PutMapping("/update-about-me")
-    public ResponseEntity<?> updateAboutMe(Principal principal, @RequestBody AboutMeUpdateDTO newAboutMe) {
+    public ResponseEntity<AboutMeUpdateDTO> updateAboutMe(Principal principal, @RequestBody AboutMeUpdateDTO newAboutMe) {
         User actingUser = userService.getUserOrException(principal.getName());
 
         if (newAboutMe.newAboutMe().length() > 2500) {
@@ -226,7 +225,7 @@ public class UserController {
      * HTTP 404 NOT FOUND if the target user couldn't be found.
      */
     @GetMapping("/profile-picture")
-    public ResponseEntity<?> getProfilePicture(@RequestParam String targetUsername) {
+    public ResponseEntity<Number> getProfilePicture(@RequestParam String targetUsername) {
         User targetUser = userService.getUserOrNull(targetUsername);
         if (targetUser == null) {
             return ResponseEntity.notFound().build();
@@ -240,12 +239,12 @@ public class UserController {
     /**
      * Updates the profile picture id of the logged-in user
      *
-     * @param principal the logged-in user
+     * @param principal               the logged-in user
      * @param profilePictureUpdateDTO the new profile picture id
      * @return HTTP 200 OK if successful. HTTP 400 BAD REQUEST if new profile picture id is invalid
      */
     @PutMapping("/update-profile-picture")
-    public ResponseEntity<?> updateProfilePicture(Principal principal, @RequestBody ProfilePictureUpdateDTO profilePictureUpdateDTO) {
+    public ResponseEntity<Void> updateProfilePicture(Principal principal, @RequestBody ProfilePictureUpdateDTO profilePictureUpdateDTO) {
         User actingUser = userService.getUserOrException(principal.getName());
 
         if (profilePictureUpdateDTO.profilePictureId() == null) {

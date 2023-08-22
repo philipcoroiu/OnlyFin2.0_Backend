@@ -38,7 +38,7 @@ public class ReviewController {
      */
     @PutMapping("/push")
     @Transactional
-    public ResponseEntity<?> pushReview(Principal principal, @RequestBody ReviewPostDTO reviewPostDTO) {
+    public ResponseEntity<String> pushReview(Principal principal, @RequestBody ReviewPostDTO reviewPostDTO) {
         User actingUser = userService.getUserOrException(principal.getName());
 
         User targetUser = userService.getUserOrNull(reviewPostDTO.targetUsername());
@@ -70,7 +70,7 @@ public class ReviewController {
      */
     @DeleteMapping("/delete")
     @Transactional
-    public ResponseEntity<?> deleteReview(Principal principal, @RequestParam String targetUsername) {
+    public ResponseEntity<Void> deleteReview(Principal principal, @RequestParam String targetUsername) {
         User actingUser = userService.getUserOrException(principal.getName());
 
         User targetUser = userService.getUserOrNull(targetUsername);
@@ -124,7 +124,7 @@ public class ReviewController {
      * 404 NOT FOUND if the target user has no review from the logged-in user
      */
     @GetMapping("/my-review")
-    public ResponseEntity<?> getMyReview(Principal principal, @RequestParam String targetUsername) {
+    public ResponseEntity<ReviewFetchDTO> getMyReview(Principal principal, @RequestParam String targetUsername) {
         User actingUser = userService.getUserOrException(principal.getName());
 
         User targetUser = userService.getUserOrNull(targetUsername);

@@ -13,7 +13,8 @@ import se.onlyfin.onlyfin2backend.model.CloudflareTurnstileResponse;
  */
 @Service
 public class CloudflareTurnstileService {
-    @Value("${TURNSTILE_SECRET}") private String turnstileSecret;
+    @Value("${TURNSTILE_SECRET}")
+    private String turnstileSecret;
     private final RestTemplate restTemplate;
 
     public CloudflareTurnstileService() {

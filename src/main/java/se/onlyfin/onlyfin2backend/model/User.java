@@ -1,7 +1,6 @@
 package se.onlyfin.onlyfin2backend.model;
 
 import jakarta.persistence.*;
-import org.hibernate.type.SqlTypes;
 import org.springframework.lang.NonNull;
 
 import java.util.Objects;

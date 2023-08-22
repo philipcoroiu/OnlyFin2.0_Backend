@@ -10,7 +10,6 @@ import se.onlyfin.onlyfin2backend.DTO.outgoing.ProfileDTO;
 import se.onlyfin.onlyfin2backend.model.Stock;
 import se.onlyfin.onlyfin2backend.model.User;
 import se.onlyfin.onlyfin2backend.repository.UserStockRepository;
-import se.onlyfin.onlyfin2backend.service.UserService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,12 +23,10 @@ import java.util.Set;
 @Controller
 public class SearchController {
     private final StockController stockController;
-    private final UserService userService;
     private final UserStockRepository userStockRepository;
 
-    public SearchController(StockController stockController, UserService userService, UserStockRepository userStockRepository) {
+    public SearchController(StockController stockController, UserStockRepository userStockRepository) {
         this.stockController = stockController;
-        this.userService = userService;
         this.userStockRepository = userStockRepository;
     }
 

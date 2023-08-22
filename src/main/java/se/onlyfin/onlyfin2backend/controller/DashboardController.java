@@ -3,7 +3,6 @@ package se.onlyfin.onlyfin2backend.controller;
 import jakarta.transaction.Transactional;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import se.onlyfin.onlyfin2backend.DTO.incoming.*;
@@ -16,12 +15,14 @@ import se.onlyfin.onlyfin2backend.repository.UserStockRepository;
 import se.onlyfin.onlyfin2backend.service.UserService;
 
 import java.security.Principal;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Objects;
 
 /**
  * This class is responsible for handling requests related to the dashboard.
  */
-//TODO: Add module content validation?
 @RequestMapping("/dash")
 @CrossOrigin(origins = "localhost:3000", allowCredentials = "true")
 @Controller
@@ -86,7 +87,7 @@ public class DashboardController {
      * 403 Forbidden if the user doesn't own the user stock
      */
     @DeleteMapping("/delete-stock")
-    public ResponseEntity<?> deleteStock(Principal principal, @RequestParam Integer targetUserStockId) {
+    public ResponseEntity<Void> deleteStock(Principal principal, @RequestParam Integer targetUserStockId) {
         User actingUser = userService.getUserOrException(principal.getName());
 
         UserStock targetUserStock = userStockRepository.findById(targetUserStockId).orElse(null);
@@ -174,7 +175,7 @@ public class DashboardController {
      * @return 200 OK if successful, 404 Not Found if the category doesn't exist, 403 Forbidden if the user doesn't own the category
      */
     @DeleteMapping("/delete-category")
-    public ResponseEntity<?> deleteCategory(Principal principal, @RequestParam Integer targetCategoryId) {
+    public ResponseEntity<Void> deleteCategory(Principal principal, @RequestParam Integer targetCategoryId) {
         User actingUser = userService.getUserOrException(principal.getName());
 
         UserCategory targetCategory = userCategoryRepository.findById(targetCategoryId).orElse(null);
@@ -199,7 +200,7 @@ public class DashboardController {
      * @return 200 OK if successful, 404 Not Found if the category doesn't exist, 403 Forbidden if the user doesn't own the category
      */
     @PostMapping("/add-module")
-    public ResponseEntity<?> addModule(Principal principal, @RequestBody ModulePostDTO modulePostDTO) {
+    public ResponseEntity<Void> addModule(Principal principal, @RequestBody ModulePostDTO modulePostDTO) {
         User actingUser = userService.getUserOrException(principal.getName());
 
         UserCategory userCategory = userCategoryRepository.findById(modulePostDTO.targetCategoryId()).orElse(null);
@@ -228,9 +229,8 @@ public class DashboardController {
 
     /**
      * @param principal the logged-in user
-     * @param moduleId the target module's id
-     * @return
-     * HTTP 200 OK with module if ok.
+     * @param moduleId  the target module's id
+     * @return HTTP 200 OK with module if ok.
      * HTTP 404 NOT FOUND if target module doesn't exist.
      * HTTP 403 FORBIDDEN if trying to fetch another user's module
      */
@@ -265,7 +265,7 @@ public class DashboardController {
      * @return 200 OK if successful, 404 Not Found if the module doesn't exist, 403 Forbidden if the user doesn't own the module
      */
     @PutMapping("/update-module")
-    public ResponseEntity<?> updateModule(Principal principal, @RequestParam Integer moduleId, @RequestBody ModuleUpdateDTO moduleUpdateDTO) {
+    public ResponseEntity<Void> updateModule(Principal principal, @RequestParam Integer moduleId, @RequestBody ModuleUpdateDTO moduleUpdateDTO) {
         User actingUser = userService.getUserOrException(principal.getName());
 
         DashboardModule targetModule = dashboardModuleRepository.findById(moduleId).orElse(null);
@@ -287,13 +287,13 @@ public class DashboardController {
     /**
      * Updates a module's layout on the logged-in user's dashboard
      *
-     * @param principal       The logged-in user
-     * @param moduleId        The id of the module to update
+     * @param principal             The logged-in user
+     * @param moduleId              The id of the module to update
      * @param moduleLayoutUpdateDTO The module layout update DTO
      * @return 200 OK if successful, 404 Not Found if the module doesn't exist, 403 Forbidden if the user doesn't own the module
      */
     @PutMapping("/update-module-layout")
-    public ResponseEntity<?> updateModuleLayout(Principal principal, @RequestParam Integer moduleId, @RequestBody ModuleLayoutUpdateDTO moduleLayoutUpdateDTO) {
+    public ResponseEntity<Void> updateModuleLayout(Principal principal, @RequestParam Integer moduleId, @RequestBody ModuleLayoutUpdateDTO moduleLayoutUpdateDTO) {
         User actingUser = userService.getUserOrException(principal.getName());
 
         DashboardModule targetModule = dashboardModuleRepository.findById(moduleId).orElse(null);
@@ -324,7 +324,7 @@ public class DashboardController {
      */
     @PutMapping("/update-module-layout-batch")
     @Transactional
-    public ResponseEntity<?> updateModuleLayoutBatch(Principal principal, @RequestParam Integer categoryId, @RequestBody ModuleLayoutUpdateBatchDTOWrapper moduleLayoutWrapper) {
+    public ResponseEntity<Void> updateModuleLayoutBatch(Principal principal, @RequestParam Integer categoryId, @RequestBody ModuleLayoutUpdateBatchDTOWrapper moduleLayoutWrapper) {
         User actingUser = userService.getUserOrException(principal.getName());
 
         UserCategory targetCategory = userCategoryRepository.findByIdHydrateModules(categoryId).orElse(null);
@@ -364,7 +364,7 @@ public class DashboardController {
      * @return 200 OK if successful, 404 Not Found if the module doesn't exist, 403 Forbidden if the user doesn't own the module
      */
     @DeleteMapping("/delete-module")
-    public ResponseEntity<?> deleteModule(Principal principal, @RequestParam Integer moduleId) {
+    public ResponseEntity<Void> deleteModule(Principal principal, @RequestParam Integer moduleId) {
         User actingUser = userService.getUserOrException(principal.getName());
 
         DashboardModule dashboardModule = dashboardModuleRepository.findById(moduleId).orElse(null);
@@ -388,7 +388,7 @@ public class DashboardController {
      * @return 200 OK if successful, 404 Not Found if the user doesn't exist
      */
     @GetMapping("/fetch-user-stocks")
-    public ResponseEntity<?> fetchUserStocks(@RequestParam String targetUsername) {
+    public ResponseEntity<List<UserStockDTO>> fetchUserStocks(@RequestParam String targetUsername) {
         User targetUser = userService.getUserOrNull(targetUsername);
         if (targetUser == null) {
             return ResponseEntity.notFound().build();
@@ -498,21 +498,21 @@ public class DashboardController {
                         userStock.getCategories()
                                 .stream()
                                 .map(userCategory -> new UserCategoryTabDTO(
-                                        userCategory.getId(),
-                                        userCategory.getName(),
-                                        userCategory.getModules()
-                                                .stream()
-                                                .map(dashboardModule -> new ModuleDTO(
-                                                        dashboardModule.getId(),
-                                                        userCategory.getId(),
-                                                        dashboardModule.getHeight(),
-                                                        dashboardModule.getWidth(),
-                                                        dashboardModule.getX(),
-                                                        dashboardModule.getY(),
-                                                        dashboardModule.getModuleType(),
-                                                        dashboardModule.getContent()
-                                                ))
-                                                .toList()
+                                                userCategory.getId(),
+                                                userCategory.getName(),
+                                                userCategory.getModules()
+                                                        .stream()
+                                                        .map(dashboardModule -> new ModuleDTO(
+                                                                dashboardModule.getId(),
+                                                                userCategory.getId(),
+                                                                dashboardModule.getHeight(),
+                                                                dashboardModule.getWidth(),
+                                                                dashboardModule.getX(),
+                                                                dashboardModule.getY(),
+                                                                dashboardModule.getModuleType(),
+                                                                dashboardModule.getContent()
+                                                        ))
+                                                        .toList()
                                         )
                                 )
                                 .toList()

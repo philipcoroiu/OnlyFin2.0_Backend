@@ -27,7 +27,6 @@ public class StockController {
     private final UserService userService;
     private final UserStockRepository userStockRepository;
 
-
     public StockController(StockRepository stockRepository, UserService userService, UserStockRepository userStockRepository) {
         this.stockRepository = stockRepository;
         this.userService = userService;
@@ -56,7 +55,7 @@ public class StockController {
      * @return stocks that match the search query. If no stocks match the search query, a 204 NO CONTENT is returned.
      */
     @GetMapping("/search")
-    public ResponseEntity<?> findStocksByName(@RequestParam String name) {
+    public ResponseEntity<List<Stock>> findStocksByName(@RequestParam String name) {
         List<Stock> stocksFound = stockRepository.findByNameContainingIgnoreCaseAndOwnerIsNull(name);
         if (stocksFound.isEmpty()) {
             return ResponseEntity.noContent().build();
@@ -66,7 +65,7 @@ public class StockController {
     }
 
     @PostMapping("/add-custom-stock")
-    public ResponseEntity<?> addCustomStock(Principal principal, @RequestBody CustomStockPostDTO customStockPostDTO) {
+    public ResponseEntity<Void> addCustomStock(Principal principal, @RequestBody CustomStockPostDTO customStockPostDTO) {
         User actingUser = userService.getUserOrException(principal.getName());
 
         if (customStockPostDTO.ticker() != null && customStockPostDTO.ticker().length() > 10) {
@@ -92,7 +91,7 @@ public class StockController {
     }
 
     @DeleteMapping("/delete-custom-stock")
-    public ResponseEntity<?> deleteCustomStock(Principal principal, @RequestParam Integer customStockId) {
+    public ResponseEntity<Void> deleteCustomStock(Principal principal, @RequestParam Integer customStockId) {
         User actingUser = userService.getUserOrException(principal.getName());
 
         Stock targetStock = stockRepository.findById(customStockId).orElse(null);

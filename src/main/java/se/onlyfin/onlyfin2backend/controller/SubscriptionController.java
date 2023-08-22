@@ -39,7 +39,7 @@ public class SubscriptionController {
      * @return 200 OK if the subscription was successful, 404 Not Found if the target user does not exist.
      */
     @PutMapping("/add")
-    public ResponseEntity<?> subscribe(Principal principal, @RequestParam String targetUsername) {
+    public ResponseEntity<Void> subscribe(Principal principal, @RequestParam String targetUsername) {
         User actingUser = userService.getUserOrException(principal.getName());
 
         User targetUser = userService.getUserOrNull(targetUsername);
@@ -70,7 +70,7 @@ public class SubscriptionController {
      * @return 200 OK if the unsubscription was successful, 404 Not Found if the target user does not exist.
      */
     @DeleteMapping("/remove")
-    public ResponseEntity<?> unsubscribe(Principal principal, @RequestParam String targetUsername) {
+    public ResponseEntity<Void> unsubscribe(Principal principal, @RequestParam String targetUsername) {
         User actingUser = userService.getUserOrException(principal.getName());
 
         User targetUser = userService.getUserOrNull(targetUsername);
@@ -94,7 +94,7 @@ public class SubscriptionController {
      * 404 Not Found if the target user does not exist.
      */
     @GetMapping("/check")
-    public ResponseEntity<?> checkSubscription(Principal principal, @RequestParam String targetUsername) {
+    public ResponseEntity<Boolean> checkSubscription(Principal principal, @RequestParam String targetUsername) {
         User actingUser = userService.getUserOrException(principal.getName());
 
         User targetUser = userService.getUserOrNull(targetUsername);
@@ -118,7 +118,7 @@ public class SubscriptionController {
      * @return A list of users that the logged-in user is subscribed to. 204 No Content if no subscriptions exists.
      */
     @GetMapping("/list")
-    public ResponseEntity<?> getSubscriptionList(Principal principal) {
+    public ResponseEntity<List<ProfileDTO>> getSubscriptionList(Principal principal) {
         User actingUser = userService.getUserOrException(principal.getName());
 
         List<User> subscriptions = subscriptionList(actingUser);
