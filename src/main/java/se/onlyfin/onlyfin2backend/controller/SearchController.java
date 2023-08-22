@@ -6,12 +6,13 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import se.onlyfin.onlyfin2backend.DTO.outgoing.ProfileDTO;
+import se.onlyfin.onlyfin2backend.DTO.outgoing.ProfileSubInfoDTO;
 import se.onlyfin.onlyfin2backend.model.Stock;
 import se.onlyfin.onlyfin2backend.model.User;
 import se.onlyfin.onlyfin2backend.repository.UserStockRepository;
+import se.onlyfin.onlyfin2backend.service.UserService;
 
-import java.util.ArrayList;
+import java.security.Principal;
 import java.util.List;
 import java.util.Set;
 
@@ -24,10 +25,14 @@ import java.util.Set;
 public class SearchController {
     private final StockController stockController;
     private final UserStockRepository userStockRepository;
+    private final UserService userService;
+    private final SubscriptionController subscriptionController;
 
-    public SearchController(StockController stockController, UserStockRepository userStockRepository) {
+    public SearchController(StockController stockController, UserStockRepository userStockRepository, UserService userService, SubscriptionController subscriptionController) {
         this.stockController = stockController;
         this.userStockRepository = userStockRepository;
+        this.userService = userService;
+        this.subscriptionController = subscriptionController;
     }
 
     /**
@@ -39,7 +44,9 @@ public class SearchController {
      * If the target stock does not exist, a 404 NOT FOUND is returned.
      */
     @GetMapping("/covers-stock")
-    public ResponseEntity<List<ProfileDTO>> findAnalystsThatCoverStock(@RequestParam Integer targetStockId) {
+    public ResponseEntity<List<ProfileSubInfoDTO>> findAnalystsThatCoverStock(Principal principal, @RequestParam Integer targetStockId) {
+        boolean loggedIn = (principal != null);
+
         Stock targetStock = stockController.getStock(targetStockId).orElse(null);
         if (targetStock == null) {
             return ResponseEntity.notFound().build();
@@ -50,10 +57,28 @@ public class SearchController {
             return ResponseEntity.noContent().build();
         }
 
-        List<ProfileDTO> profiles = new ArrayList<>();
-        for (User currentUser : usersCoveringTargetStock) {
-            profiles.add(new ProfileDTO(currentUser.getId(), currentUser.getUsername()));
+        if (!loggedIn) {
+            List<ProfileSubInfoDTO> profiles = usersCoveringTargetStock.stream()
+                    .map(user -> new ProfileSubInfoDTO(
+                            user.getId(),
+                            user.getUsername(),
+                            false)
+                    )
+                    .toList();
+
+            return ResponseEntity.ok().body(profiles);
         }
+
+        User actingUser = userService.getUserOrException(principal.getName());
+        List<User> subscriptions = subscriptionController.subscriptionList(actingUser);
+
+        List<ProfileSubInfoDTO> profiles = usersCoveringTargetStock.stream()
+                .map(user -> new ProfileSubInfoDTO(
+                        user.getId(),
+                        user.getUsername(),
+                        subscriptions.contains(user))
+                )
+                .toList();
 
         return ResponseEntity.ok().body(profiles);
     }
