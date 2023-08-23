@@ -222,18 +222,10 @@ public class UserController {
      *
      * @param targetUsername The username of the target user
      * @return HTTP 200 OK with profile picture id if successful.
-     * HTTP 404 NOT FOUND if the target user couldn't be found.
      */
     @GetMapping("/profile-picture")
-    public ResponseEntity<Number> getProfilePicture(@RequestParam String targetUsername) {
-        User targetUser = userService.getUserOrNull(targetUsername);
-        if (targetUser == null) {
-            return ResponseEntity.notFound().build();
-        }
-
-        Integer profilePictureId = targetUser.getProfilePictureId();
-
-        return ResponseEntity.ok().body(profilePictureId);
+    public ResponseEntity<Integer> getProfilePicture(@RequestParam String targetUsername) {
+        return ResponseEntity.ok().body(userService.getProfilePictureId(targetUsername));
     }
 
     /**

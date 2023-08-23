@@ -21,6 +21,7 @@ import java.util.List;
 public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final int defaultProfilePictureId = 0;
 
     public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
@@ -228,6 +229,12 @@ public class UserService {
         if (targetUser != null) {
             userRepository.delete(targetUser);
         }
+    }
+
+    public int getProfilePictureId(String targetUsername) {
+        Integer profilePictureId = userRepository.getProfilePictureIdByUsername(targetUsername);
+
+        return (profilePictureId != null) ? profilePictureId : defaultProfilePictureId;
     }
 
 }

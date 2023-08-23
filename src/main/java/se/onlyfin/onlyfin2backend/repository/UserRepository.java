@@ -1,5 +1,6 @@
 package se.onlyfin.onlyfin2backend.repository;
 
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import se.onlyfin.onlyfin2backend.model.User;
 
@@ -24,4 +25,11 @@ public interface UserRepository extends CrudRepository<User, Integer> {
     List<User> findTop20ByisAnalystIsTrueAndUsernameContainsIgnoreCase(String searchQuery);
 
     Optional<User> findByisAnalystIsTrueAndUsernameEquals(String analystUsername);
+
+    @Query("""
+            SELECT user.profilePictureId
+            FROM User user
+            WHERE user.username = :username
+            """)
+    Integer getProfilePictureIdByUsername(String username);
 }
